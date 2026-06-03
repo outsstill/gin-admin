@@ -36,11 +36,14 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 		ignorePaths := helpers.GetIgnorePaths(app.Prefix)
 
 		if !global.Config.IsProduction() {
-			fmt.Printf("full :%s path :%s %v \n", path, c.Request.URL.Path, ignorePaths)
+			fmt.Printf("full :%s  %v \n", path, ignorePaths)
 		}
 
 		//
 		if !helpers.StringContains(ignorePaths, path) {
+			if !global.Config.IsProduction() {
+				fmt.Printf("full 333 :%s  %v \n", path, ignorePaths)
+			}
 			// 从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
 			claims, err := jwt.NewJWT().ParserToken(c)
 
