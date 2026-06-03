@@ -150,7 +150,7 @@ type Router struct {
 
 // 初始值直接写死
 var globalRouter = &Router{
-	ignorePaths: []string{"/admin/auth/login", "/admin/auth/captcha", "/admin/upload", "/admin/version", "/admin/test"}, // 忽略的路径无需验证,
+	ignorePaths: []string{"/auth/login", "/auth/captcha", "/upload", "/version", "/test"}, // 忽略的路径无需验证,
 }
 
 // 只暴露方法，不暴露结构体
