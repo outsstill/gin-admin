@@ -65,8 +65,8 @@ func Abort403(c *gin.Context, msg ...string) {
 
 // Abort403 响应 403，未传参 msg 时使用默认消息
 func Abort401(c *gin.Context, msg ...string) {
-	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-		"code":    http.StatusForbidden,
+	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		"code":    http.StatusUnauthorized,
 		"message": defaultMessage("权限不足，请确定您有对应的权限", msg...),
 	})
 }

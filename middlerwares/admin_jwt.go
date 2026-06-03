@@ -23,13 +23,20 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 		c.Query("name") // "abc"        query参数
 		*/
 		path := c.FullPath()
-		ignorePermissionPaths := []string{"/admin/auth/logout", "/admin/auth/refresh-token", "/admin/roles/all", "/admin/permissions/all", "/admin/menus/all", "/admin/auth/current"}
+
+		ignorePermissionPaths := []string{"/auth/logout", "/auth/refresh-token", "/roles/all", "/permissions/all", "/menus/all", "/auth/current"}
+
+		realIgnorePermissionPaths := make([]string, len(ignorePermissionPaths))
+
+		for _, itemPath := range ignorePermissionPaths {
+			realIgnorePermissionPaths = append(realIgnorePermissionPaths, fmt.Sprintf("%s/%s", app.Prefix, itemPath))
+		}
 
 		//if !app.IsProduction() {
 		//	fmt.Printf("full :%s path :%s \n", c.FullPath(), c.Request.URL.Path)
 		//}
 
-		ignorePaths := helpers.GetIgnorePaths()
+		ignorePaths := helpers.GetIgnorePaths(app.Prefix)
 		//
 		if !helpers.StringContains(ignorePaths, path) {
 			// 从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
@@ -60,7 +67,7 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 			isPass := false
 
 			// 有些全局的操作也不做验证权限
-			if helpers.StringContains(ignorePermissionPaths, path) {
+			if helpers.StringContains(realIgnorePermissionPaths, path) {
 				isPass = true
 			} else {
 				// 超级管理员

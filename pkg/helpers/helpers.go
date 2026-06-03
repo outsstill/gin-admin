@@ -154,13 +154,17 @@ var globalRouter = &Router{
 }
 
 // 只暴露方法，不暴露结构体
-func GetIgnorePaths() []string {
+func GetIgnorePaths(prefix string) []string {
 	globalRouter.mu.RLock()
 	defer globalRouter.mu.RUnlock()
 
-	res := make([]string, len(globalRouter.ignorePaths))
-	copy(res, globalRouter.ignorePaths)
-	return res
+	paths := make([]string, len(globalRouter.ignorePaths))
+
+	for _, p := range globalRouter.ignorePaths {
+		paths = append(paths, fmt.Sprintf("%s/%s", prefix, p))
+	}
+
+	return paths
 }
 
 func AppendIgnorePaths(v []string) {

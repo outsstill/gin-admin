@@ -2,6 +2,8 @@ package admin
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -97,6 +99,10 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 
 	if len(prefix) == 0 {
 		prefix = "/admin"
+	}
+
+	if !strings.HasPrefix("/", prefix) {
+		prefix = fmt.Sprintf("/%s", prefix)
 	}
 
 	app := &core.App{

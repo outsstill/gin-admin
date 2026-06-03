@@ -12,7 +12,11 @@ func main() {
 	cache := getCache()
 
 	// 通过配置文件传入配置,并传入必要的实例
-	app := admin.NewAppWithConfigFile("config.yaml", "/admin", logger, db, redis, cache)
+	app, err := admin.NewAppWithConfigFile("config.yaml", "/admin", admin.WithDB(database.DB), admin.WithRedis(redis.Redis.Client), admin.WithLogger(logger.Logger))
+
+    if err != nil {
+    panic(err)
+    }
 	// 初始化路由，注册外部module
 	admin.Register(r, app, &topic.Module{})
 
