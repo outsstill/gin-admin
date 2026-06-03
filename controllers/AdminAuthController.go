@@ -27,9 +27,9 @@ func NewAdminAuthController(base *BaseAPIController) *AdminAuthController {
 func (ac *AdminAuthController) Login(c *gin.Context) {
 	// 验证
 	request := requests.AdminLoginRequest{}
-	//if ok := requests.ValidateFunc(c, &request, requests.VerityAdminLogin); !ok {
-	//	return
-	//}
+	if ok := requests.ValidateFunc(c, ac.App, &request, requests.VerityAdminLogin); !ok {
+		return
+	}
 
 	if err := c.ShouldBind(&request); err != nil {
 		response.BadRequest(c, err, "请求解析错误，请确认请求格式是否正确。上传文件请使用 multipart 标头，参数请使用 JSON 格式。")
