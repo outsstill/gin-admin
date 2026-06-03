@@ -101,7 +101,7 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 		prefix = "/admin"
 	}
 
-	if !strings.HasPrefix("/", prefix) {
+	if !strings.HasPrefix(prefix, "/") {
 		prefix = fmt.Sprintf("/%s", prefix)
 	}
 
