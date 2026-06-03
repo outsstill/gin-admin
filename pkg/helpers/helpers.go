@@ -161,7 +161,7 @@ func GetIgnorePaths(prefix string) []string {
 	paths := make([]string, len(globalRouter.ignorePaths))
 
 	for _, p := range globalRouter.ignorePaths {
-		if !strings.HasPrefix(p, prefix) {
+		if !strings.HasPrefix(p, "/") {
 			p = "/" + p
 		}
 		paths = append(paths, fmt.Sprintf("%s%s", prefix, p))
