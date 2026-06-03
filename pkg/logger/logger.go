@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/outsstill/gin-admin/global"
+	"github.com/outsstill/gin-admin/setting"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -17,11 +17,13 @@ import (
 
 type Logger struct {
 	*zap.Logger
+	Config *setting.Setting
 }
 
-func New(z *zap.Logger) *Logger {
+func New(z *zap.Logger, config *setting.Setting) *Logger {
 	return &Logger{
 		Logger: z,
+		Config: config,
 	}
 }
 
@@ -53,7 +55,7 @@ func New(z *zap.Logger) *Logger {
 //}
 
 // getEncoder 设置日志存储格式
-func getEncoder() zapcore.Encoder {
+func (l *Logger) getEncoder() zapcore.Encoder {
 
 	// 日志格式规则
 	encoderConfig := zapcore.EncoderConfig{
@@ -72,7 +74,7 @@ func getEncoder() zapcore.Encoder {
 	}
 
 	// 本地环境配置
-	if global.Config.IsDebug() {
+	if l.Config.IsDebug() {
 		// 终端输出的关键词高亮
 		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		// 本地设置内置的 Console 解码器（支持 stacktrace 换行）

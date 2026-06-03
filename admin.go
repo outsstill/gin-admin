@@ -59,7 +59,7 @@ func NewApp(prefix string, opts ...Option) (*core.App, error) {
 	}
 
 	// 全局变量初始化
-	globalLogger := logger.New(cfg.Logger)
+	globalLogger := logger.New(cfg.Logger, cfg.Config)
 	global.Init(globalLogger, cfg.Config)
 
 	return app, nil
@@ -107,7 +107,7 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 	}
 
 	// 全局变量初始化
-	globalLogger := logger.New(cfg.Logger)
+	globalLogger := logger.New(cfg.Logger, cfg.Config)
 	global.Init(globalLogger, cfg.Config)
 
 	return app, nil
