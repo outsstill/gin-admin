@@ -4,25 +4,24 @@ import (
 	"errors"
 	"time"
 
+	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/redis"
-	"github.com/outsstill/gin-admin/setting"
 )
 
 // RedisStore 实现 base64Captcha.Store interface
 type RedisStore struct {
 	RedisClient *redis.RedisClient
 	KeyPrefix   string
-	Config      *setting.Setting
 }
 
 // Set 实现 base64Captcha.Store interface 的 Set 方法
 func (s *RedisStore) Set(key string, value string) error {
 
-	ExpireTime := time.Minute * time.Duration(s.Config.Captcha.ExpireTime)
+	ExpireTime := time.Minute * time.Duration(global.Config.Captcha.ExpireTime)
 
 	// 方便本地开发调试
-	if s.Config.IsDebug() {
-		ExpireTime = time.Minute * time.Duration(s.Config.Captcha.DebugExpireTime)
+	if global.Config.IsDebug() {
+		ExpireTime = time.Minute * time.Duration(global.Config.Captcha.DebugExpireTime)
 	}
 
 	if ok := s.RedisClient.Set(s.KeyPrefix+key, value, ExpireTime); !ok {
