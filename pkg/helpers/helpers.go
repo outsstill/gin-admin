@@ -158,7 +158,7 @@ func GetIgnorePaths(prefix string) []string {
 	globalRouter.mu.RLock()
 	defer globalRouter.mu.RUnlock()
 
-	paths := make([]string, len(globalRouter.ignorePaths))
+	paths := make([]string, 0, len(globalRouter.ignorePaths))
 
 	for _, p := range globalRouter.ignorePaths {
 		if !strings.HasPrefix(p, "/") {

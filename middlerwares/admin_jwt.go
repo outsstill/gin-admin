@@ -27,23 +27,15 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 
 		ignorePermissionPaths := []string{"/auth/logout", "/auth/refresh-token", "/roles/all", "/permissions/all", "/menus/all", "/auth/current"}
 
-		realIgnorePermissionPaths := make([]string, len(ignorePermissionPaths))
+		realIgnorePermissionPaths := make([]string, 0, len(ignorePermissionPaths))
 
 		for _, itemPath := range ignorePermissionPaths {
 			realIgnorePermissionPaths = append(realIgnorePermissionPaths, fmt.Sprintf("%s/%s", app.Prefix, itemPath))
 		}
 
 		ignorePaths := helpers.GetIgnorePaths(app.Prefix)
-
-		if !global.Config.IsProduction() {
-			fmt.Printf("full :%s  %v \n", path, ignorePaths)
-		}
-
 		//
 		if !helpers.StringContains(ignorePaths, path) {
-			if !global.Config.IsProduction() {
-				fmt.Printf("full 333 :%s  %v \n", path, ignorePaths)
-			}
 			// 从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
 			claims, err := jwt.NewJWT().ParserToken(c)
 
@@ -117,10 +109,6 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 			// 4. 拒绝访问
 			response.Abort403(c, "无权访问")
 			return
-		}
-
-		if !global.Config.IsProduction() {
-			fmt.Printf("full222 :%s  %v \n", path, ignorePaths)
 		}
 
 		c.Next()
