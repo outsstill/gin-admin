@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/outsstill/gin-admin/global"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -70,13 +71,13 @@ func getEncoder() zapcore.Encoder {
 		EncodeCaller:   zapcore.ShortCallerEncoder,     // Caller 短格式，如：types/converter.go:17，长格式为绝对路径
 	}
 
-	// TODO 本地环境配置
-	//if internal.IsDebug() {
-	//	// 终端输出的关键词高亮
-	//	encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	//	// 本地设置内置的 Console 解码器（支持 stacktrace 换行）
-	//	return zapcore.NewConsoleEncoder(encoderConfig)
-	//}
+	// 本地环境配置
+	if global.Config.IsDebug() {
+		// 终端输出的关键词高亮
+		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		// 本地设置内置的 Console 解码器（支持 stacktrace 换行）
+		return zapcore.NewConsoleEncoder(encoderConfig)
+	}
 
 	// 线上环境使用 JSON 编码器
 	return zapcore.NewJSONEncoder(encoderConfig)

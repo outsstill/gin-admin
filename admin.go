@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -14,29 +15,37 @@ import (
 	"github.com/outsstill/gin-admin/routes"
 	"github.com/outsstill/gin-admin/setting"
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-func NewApp(prefix string, config *setting.Setting, log *zap.Logger, db *gorm.DB, redis *redis.Client, cache *cache.CacheService) *core.App {
+func NewApp(prefix string, opts ...Option) (*core.App, error) {
 
-	if db == nil {
-		panic("logger is required")
+	cfg := &InitConfig{}
+
+	// 2️⃣ 应用手动配置（覆盖）
+	for _, opt := range opts {
+		opt(cfg)
 	}
 
-	if redis == nil {
-		panic("db is required")
+	if cfg.Config == nil {
+		return nil, errors.New("config is required")
 	}
 
-	if log == nil {
-		panic("logger is required")
+	if cfg.DB == nil {
+		return nil, errors.New("db is required")
 	}
 
-	if config == nil {
-		panic("config is required")
+	if cfg.Redis == nil {
+		return nil, errors.New("redis is required")
 	}
 
-	rClient := redisClient.NewClient(redis)
+	if cfg.Logger == nil {
+		return nil, errors.New("logger is required")
+	}
+
+	rClient := redisClient.NewClient(cfg.Redis)
 
 	if len(prefix) == 0 {
 		prefix = "/admin"
@@ -44,42 +53,47 @@ func NewApp(prefix string, config *setting.Setting, log *zap.Logger, db *gorm.DB
 
 	app := &core.App{
 		Prefix: prefix,
-		DB:     db,
+		DB:     cfg.DB,
 		Redis:  rClient,
-		Cache:  cache,
+		Cache:  cfg.Cache,
 	}
 
 	// 全局变量初始化
-	globalLogger := logger.New(log)
-	global.Init(globalLogger, config)
+	globalLogger := logger.New(cfg.Logger)
+	global.Init(globalLogger, cfg.Config)
 
-	return app
+	return app, nil
 }
-func NewAppWithConfigFile(filepath string, prefix string, log *zap.Logger, db *gorm.DB, redis *redis.Client, cache *cache.CacheService) *core.App {
+func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core.App, error) {
 
-	config, err := core.LoadConfig(filepath)
+	cfg, err := loadConfig(filepath)
 
 	if err != nil {
-		panic("配置文件错误" + err.Error())
+		return nil, errors.New("配置文件错误")
 	}
 
-	if config == nil {
-		panic("config is required")
+	if cfg.Config == nil {
+		return nil, errors.New("config is nil")
 	}
 
-	if db == nil {
-		panic("logger is required")
+	// 2️⃣ 应用手动配置（覆盖）
+	for _, opt := range opts {
+		opt(cfg)
 	}
 
-	if redis == nil {
-		panic("db is required")
+	if cfg.DB == nil {
+		return nil, errors.New("db is required")
 	}
 
-	if log == nil {
-		panic("logger is required")
+	if cfg.Redis == nil {
+		return nil, errors.New("redis is required")
 	}
 
-	rClient := redisClient.NewClient(redis)
+	if cfg.Logger == nil {
+		return nil, errors.New("logger is required")
+	}
+
+	rClient := redisClient.NewClient(cfg.Redis)
 
 	if len(prefix) == 0 {
 		prefix = "/admin"
@@ -87,16 +101,16 @@ func NewAppWithConfigFile(filepath string, prefix string, log *zap.Logger, db *g
 
 	app := &core.App{
 		Prefix: prefix,
-		DB:     db,
+		DB:     cfg.DB,
 		Redis:  rClient,
-		Cache:  cache,
+		Cache:  cfg.Cache,
 	}
 
 	// 全局变量初始化
-	globalLogger := logger.New(log)
-	global.Init(globalLogger, config)
+	globalLogger := logger.New(cfg.Logger)
+	global.Init(globalLogger, cfg.Config)
 
-	return app
+	return app, nil
 }
 
 var builtinModules = []core.Module{}
@@ -172,4 +186,65 @@ func registerModule(app *core.App, root *gin.RouterGroup, m core.Module) {
 	}
 
 	m.Register(app, group)
+}
+
+type InitConfig struct {
+	DB     *gorm.DB
+	Redis  *redis.Client
+	Logger *zap.Logger
+	Config *setting.Setting
+	Cache  *cache.CacheService
+}
+
+type Option func(config *InitConfig)
+
+func loadConfig(path string) (*InitConfig, error) {
+	v := viper.New()
+
+	if len(path) > 0 {
+		v.SetConfigType("yaml") // 类型
+		v.AddConfigPath(".")    // 当前目录
+		v.SetConfigFile(path)
+
+		if err := v.ReadInConfig(); err != nil {
+			return nil, err
+		}
+	}
+
+	cfg := InitConfig{}
+	if err := v.Unmarshal(&cfg.Config); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
+}
+
+func WithConfig(setting *setting.Setting) Option {
+	return func(c *InitConfig) {
+		c.Config = setting
+	}
+}
+
+func WithLogger(logger *zap.Logger) Option {
+	return func(c *InitConfig) {
+		c.Logger = logger
+	}
+}
+
+func WithDB(db *gorm.DB) Option {
+	return func(c *InitConfig) {
+		c.DB = db
+	}
+}
+
+func WithRedis(redis *redis.Client) Option {
+	return func(c *InitConfig) {
+		c.Redis = redis
+	}
+}
+
+func WithCache(cache *cache.CacheService) Option {
+	return func(c *InitConfig) {
+		c.Cache = cache
+	}
 }
