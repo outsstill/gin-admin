@@ -284,7 +284,7 @@ func VerityAdminLogin(app *core.App, obj interface{}) map[string][]string {
 	errors := ValidateStruct(app, obj, messages)
 	// 手机验证码
 	_data := obj.(*AdminLoginRequest)
-	errors = ValidateCaptcha(_data.CaptchaID, _data.CaptchaAnswer, errors)
+	errors = ValidateCaptcha(app*core.App, _data.CaptchaID, _data.CaptchaAnswer, errors)
 
 	return errors
 }

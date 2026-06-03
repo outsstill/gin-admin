@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/mojocn/base64Captcha"
+	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/global"
-	"github.com/outsstill/gin-admin/pkg/redis"
 )
 
 type Captcha struct {
@@ -20,14 +20,14 @@ var once sync.Once
 var internalCaptcha *Captcha
 
 // NewCaptcha 单例模式获取
-func NewCaptcha() *Captcha {
+func NewCaptcha(app *core.App) *Captcha {
 	once.Do(func() {
 		// 初始化 Captcha 对象
 		internalCaptcha = &Captcha{}
 
 		// 使用全局 Redis 对象，并配置存储 Key 的前缀
 		store := RedisStore{
-			RedisClient: redis.Redis,
+			RedisClient: app.Redis,
 			KeyPrefix:   global.Config.App.Name + ":captcha:",
 		}
 

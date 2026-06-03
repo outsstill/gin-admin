@@ -93,7 +93,7 @@ func (ac *AdminAuthController) RefreshToken(c *gin.Context) {
 // ShowCaptcha 显示图片验证码
 func (ac *AdminAuthController) ShowCaptcha(c *gin.Context) {
 	// 生成验证码
-	id, b64s, answer, err := captcha.NewCaptcha().GenerateCaptcha()
+	id, b64s, answer, err := captcha.NewCaptcha(ac.App).GenerateCaptcha()
 
 	if global.Config.IsDebug() {
 		fmt.Printf("获取验证码 id:%s answer:%s\n", id, answer)

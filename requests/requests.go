@@ -96,8 +96,8 @@ func ValidateStruct(app *core.App, data interface{}, messages map[string]map[str
 	return errs
 }
 
-func ValidateCaptcha(captchaID, captchaAnswer string, errs map[string][]string) map[string][]string {
-	if ok := captcha.NewCaptcha().VerifyCaptcha(captchaID, captchaAnswer); !ok {
+func ValidateCaptcha(app *core.App, captchaID, captchaAnswer string, errs map[string][]string) map[string][]string {
+	if ok := captcha.NewCaptcha(app).VerifyCaptcha(captchaID, captchaAnswer); !ok {
 		errs["captcha_answer"] = append(errs["captcha_answer"], "图片验证码错误")
 	}
 	return errs
