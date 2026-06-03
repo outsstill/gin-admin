@@ -116,6 +116,10 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 			return
 		}
 
+		if !global.Config.IsProduction() {
+			fmt.Printf("full222 :%s  %v \n", path, ignorePaths)
+		}
+
 		c.Next()
 	}
 }
