@@ -1,0 +1,107 @@
+package controllers
+
+import (
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/outsstill/gin-admin/model/adminPermission"
+	"github.com/outsstill/gin-admin/pkg/response"
+	"github.com/outsstill/gin-admin/requests"
+	service "github.com/outsstill/gin-admin/services"
+)
+
+type AdminPermissionController struct {
+	*BaseAPIController
+}
+
+func NewAdminPermissionController(base *BaseAPIController) *AdminPermissionController {
+	return &AdminPermissionController{
+		BaseAPIController: base,
+	}
+}
+
+func (uc *AdminPermissionController) Index(c *gin.Context) {
+
+	data, pager := service.NewAdminPermissionService(uc.App).Paginate(c, uc.GetPerPage(c))
+
+	response.Data(c, gin.H{
+		"data":  data,
+		"pager": pager,
+	})
+}
+
+func (uc *AdminPermissionController) All(c *gin.Context) {
+
+	models := service.NewAdminPermissionService(uc.App).All()
+
+	response.Data(c, models)
+}
+
+func (uc *AdminPermissionController) Get(c *gin.Context) {
+
+	user := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+
+	response.Data(c, user)
+}
+
+func (uc *AdminPermissionController) Store(c *gin.Context) {
+	// 验证
+	request := requests.AdminPermissionStoreRequest{}
+	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminPermissionStore); !ok {
+		return
+	}
+
+	u := adminPermission.AdminPermission{
+		Name:       request.Name,
+		Slug:       request.Slug,
+		HttpMethod: strings.ToLower(request.HttpMethod),
+		HttpPath:   request.HttpPath,
+		Order:      request.Order,
+		ParentId:   request.ParentId,
+	}
+	service.NewAdminPermissionService(uc.App).Create(u)
+
+	response.Data(c, u)
+}
+
+func (uc *AdminPermissionController) Update(c *gin.Context) {
+	userModel := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	if userModel.ID <= 0 {
+		response.Fail(c, "没有找到")
+		return
+	}
+
+	// 验证
+	request := requests.AdminPermissionUpdateRequest{}
+	request.ID = userModel.ID
+	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminPermissionUpdate); !ok {
+		return
+	}
+
+	userModel.HttpMethod = strings.ToLower(request.HttpMethod)
+	userModel.HttpPath = request.HttpPath
+	userModel.Name = request.Name
+	userModel.Slug = request.Slug
+	userModel.Order = request.Order
+	userModel.ParentId = request.ParentId
+
+	service.NewAdminPermissionService(uc.App).Save(&userModel)
+
+	response.Data(c, userModel)
+}
+
+func (uc *AdminPermissionController) Delete(c *gin.Context) {
+	userModel := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	if userModel.ID <= 0 {
+		response.Fail(c, "没有找到")
+		return
+	}
+
+	if res := service.NewAdminPermissionService(uc.App).Delete(&userModel); res > 0 {
+		response.Success(c)
+		return
+	}
+
+	response.Fail(c, "删除失败")
+
+}
