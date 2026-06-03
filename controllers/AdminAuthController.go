@@ -31,10 +31,10 @@ func (ac *AdminAuthController) Login(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBind(&request); err != nil {
-		response.BadRequest(c, err, "请求解析错误，请确认请求格式是否正确。上传文件请使用 multipart 标头，参数请使用 JSON 格式。")
-		return
-	}
+	//if err := c.ShouldBind(&request); err != nil {
+	//	response.BadRequest(c, err, "请求解析错误，请确认请求格式是否正确。上传文件请使用 multipart 标头，参数请使用 JSON 格式。")
+	//	return
+	//}
 
 	userModel, err := auth.NewAuth(ac.App).AttemptAdmin(request.Username, request.Password)
 
