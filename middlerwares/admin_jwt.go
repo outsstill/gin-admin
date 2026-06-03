@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/outsstill/gin-admin/core"
+	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/jwt"
 	"github.com/outsstill/gin-admin/pkg/response"
@@ -32,11 +33,12 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 			realIgnorePermissionPaths = append(realIgnorePermissionPaths, fmt.Sprintf("%s/%s", app.Prefix, itemPath))
 		}
 
-		//if !app.IsProduction() {
-		//	fmt.Printf("full :%s path :%s \n", c.FullPath(), c.Request.URL.Path)
-		//}
-
 		ignorePaths := helpers.GetIgnorePaths(app.Prefix)
+
+		if !global.Config.IsProduction() {
+			fmt.Printf("full :%s path :%s %v \n", path, c.Request.URL.Path, ignorePaths)
+		}
+
 		//
 		if !helpers.StringContains(ignorePaths, path) {
 			// 从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
