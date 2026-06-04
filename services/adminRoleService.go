@@ -144,7 +144,7 @@ func (service *AdminRoleService) Delete(model *adminRole.AdminRole) (rowsAffecte
 }
 
 func (service *AdminRoleService) Get(idstr string) (model adminRole.AdminRole) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.app.DB.Where("id", idstr).Preload("Menus").Preload("Permissions").First(&model)
 	return
 }
 
