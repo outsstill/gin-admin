@@ -48,7 +48,7 @@ func (uc *AdminConfigController) Store(c *gin.Context) {
 		return
 	}
 
-	u := configModel.Config{
+	u := &configModel.Config{
 		ConfigLabel: request.ConfigLabel,
 		ConfigKey:   request.ConfigKey,
 		ConfigValue: request.ConfigValue,
@@ -64,7 +64,7 @@ func (uc *AdminConfigController) Store(c *gin.Context) {
 		IsRequired:  request.IsRequired,
 	}
 
-	service.NewConfigService(uc.App).Create(&u)
+	service.NewConfigService(uc.App).Create(u)
 
 	response.Data(c, u)
 }

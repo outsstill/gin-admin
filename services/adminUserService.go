@@ -105,7 +105,7 @@ func (service *AdminUserService) Create(c *gin.Context, request *requests.AdminU
 		}
 	}
 
-	model := adminUser.AdminUser{
+	model := &adminUser.AdminUser{
 		Username: request.Username,
 		Password: request.Password,
 		Name:     request.Name,
@@ -116,7 +116,7 @@ func (service *AdminUserService) Create(c *gin.Context, request *requests.AdminU
 		model.AvatarId = helpers.Uint64Ptr(cast.ToUint64(request.AvatarId))
 	}
 
-	if err := tx.Create(&model).Error; err != nil {
+	if err := tx.Create(model).Error; err != nil {
 		tx.Rollback()
 		response.BadRequest(c, err, "创建账号失败")
 		return

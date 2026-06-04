@@ -49,7 +49,7 @@ func (uc *AdminMenuController) Store(c *gin.Context) {
 		return
 	}
 
-	u := adminMenu.AdminMenu{
+	u := &adminMenu.AdminMenu{
 		Name:     request.Name,
 		Icon:     request.Icon,
 		Path:     request.Path,

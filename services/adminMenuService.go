@@ -19,8 +19,8 @@ func NewAdminMenuService(app *core.App) *AdminMenuService {
 	}
 }
 
-func (service *AdminMenuService) Create(model adminMenu.AdminMenu) {
-	service.app.DB.Create(&model)
+func (service *AdminMenuService) Create(model *adminMenu.AdminMenu) {
+	service.app.DB.Create(model)
 }
 
 func (service *AdminMenuService) Save(model *adminMenu.AdminMenu) (rowsAffected int64) {

@@ -51,7 +51,7 @@ func (uc *AdminPermissionController) Store(c *gin.Context) {
 		return
 	}
 
-	u := adminPermission.AdminPermission{
+	u := &adminPermission.AdminPermission{
 		Name:       request.Name,
 		Slug:       request.Slug,
 		HttpMethod: strings.ToLower(request.HttpMethod),

@@ -19,8 +19,8 @@ func NewAdminPermissionService(app *core.App) *AdminPermissionService {
 	}
 }
 
-func (service *AdminPermissionService) Create(model adminPermission.AdminPermission) {
-	service.app.DB.Create(&model)
+func (service *AdminPermissionService) Create(model *adminPermission.AdminPermission) {
+	service.app.DB.Create(model)
 }
 
 func (service *AdminPermissionService) Save(model *adminPermission.AdminPermission) (rowsAffected int64) {

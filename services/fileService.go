@@ -123,8 +123,8 @@ func (service *FileService) DeleteFile(id string) error {
 	return nil
 }
 
-func (service *FileService) Create(model fileModel.File) {
-	service.app.DB.Create(&model)
+func (service *FileService) Create(model *fileModel.File) {
+	service.app.DB.Create(model)
 }
 
 func (service *FileService) Save(model *fileModel.File) (rowsAffected int64) {

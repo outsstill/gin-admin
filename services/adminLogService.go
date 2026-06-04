@@ -19,8 +19,8 @@ func NewAdminLogService(app *core.App) *AdminLogService {
 	}
 }
 
-func (service *AdminLogService) Create(model adminLog.AdminLog) {
-	service.app.DB.Create(&model)
+func (service *AdminLogService) Create(model *adminLog.AdminLog) {
+	service.app.DB.Create(model)
 }
 
 func (service *AdminLogService) Save(model *adminLog.AdminLog) (rowsAffected int64) {

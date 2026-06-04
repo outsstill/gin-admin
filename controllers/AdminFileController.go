@@ -54,7 +54,7 @@ func (uc *AdminFileController) Store(c *gin.Context) {
 		return
 	}
 
-	u := fileModel.File{
+	u := &fileModel.File{
 		Name:         request.Name,
 		OriginName:   request.OriginName,
 		Size:         request.Size,

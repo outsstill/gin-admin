@@ -53,14 +53,14 @@ func (service *AdminRoleService) Create(c *gin.Context, request *requests.AdminR
 		}
 	}
 
-	role := adminRole.AdminRole{
+	role := &adminRole.AdminRole{
 		Name:        request.Name,
 		Slug:        request.Slug,
 		Permissions: permissions,
 		Menus:       menus,
 	}
 
-	if err := tx.Create(&role).Error; err != nil {
+	if err := tx.Create(role).Error; err != nil {
 		tx.Rollback()
 		response.BadRequest(c, err, "创建角色失败")
 		return

@@ -40,7 +40,7 @@ func (uc *AdminLogController) Get(c *gin.Context) {
 
 func (uc *AdminLogController) Store(c *gin.Context) {
 
-	u := adminLog.AdminLog{
+	u := &adminLog.AdminLog{
 		UserId: cast.ToUint64(auth.CurrentAdminUID(c)),
 	}
 
