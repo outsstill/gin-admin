@@ -59,7 +59,7 @@ func (ac *AdminAuthController) Login(c *gin.Context) {
 
 		response.Data(c, gin.H{
 			"token": token,
-			//"user":  userModel,
+			"user":  userModel,
 		})
 	}
 }
