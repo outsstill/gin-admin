@@ -27,7 +27,7 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 		}
 
-		adminLog := adminLog.AdminLog{}
+		adminLog := &adminLog.AdminLog{}
 		adminLog.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
 
 		// 设置开始时间
