@@ -34,7 +34,7 @@ func (service *AdminMenuService) Delete(model *adminMenu.AdminMenu) (rowsAffecte
 }
 
 func (service *AdminMenuService) Get(idstr string) (model adminMenu.AdminMenu) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.app.DB.Where("id", idstr).First(&model)
 	return
 }
 

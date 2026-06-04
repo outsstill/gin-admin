@@ -34,7 +34,7 @@ func (service *AdminLogService) Delete(model *adminLog.AdminLog) (rowsAffected i
 }
 
 func (service *AdminLogService) Get(idstr string) (model adminLog.AdminLog) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.app.DB.Where("id", idstr).First(&model)
 	return
 }
 

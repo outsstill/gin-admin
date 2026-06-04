@@ -34,7 +34,7 @@ func (service *ConfigService) Delete(model *configModel.Config) (rowsAffected in
 }
 
 func (service *ConfigService) Get(idstr string) (model configModel.Config) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.app.DB.Where("id", idstr).First(&model)
 	return
 }
 

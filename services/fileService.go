@@ -138,7 +138,7 @@ func (service *FileService) Delete(model *fileModel.File) (rowsAffected int64) {
 }
 
 func (service *FileService) Get(idstr string) (model fileModel.File) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.app.DB.Where("id", idstr).First(&model)
 	return
 }
 

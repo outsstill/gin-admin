@@ -34,7 +34,7 @@ func (service *AdminPermissionService) Delete(model *adminPermission.AdminPermis
 }
 
 func (service *AdminPermissionService) Get(idstr string) (model adminPermission.AdminPermission) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.app.DB.Where("id", idstr).First(&model)
 	return
 }
 
