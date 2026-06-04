@@ -138,7 +138,7 @@ func (service *AdminRoleService) Update(c *gin.Context, request *requests.AdminR
 	}
 }
 
-func (service *AdminRoleService) UpdateMenus(c *gin.Context, request *requests.AdminRoleUpdateRequest, userModel *adminRole.AdminRole) {
+func (service *AdminRoleService) UpdateMenus(c *gin.Context, request *requests.AdminRoleUpdateMenusRequest, userModel *adminRole.AdminRole) {
 
 	tx := service.app.DB.Begin()
 	defer func() {
@@ -177,7 +177,7 @@ func (service *AdminRoleService) UpdateMenus(c *gin.Context, request *requests.A
 	}
 }
 
-func (service *AdminRoleService) UpdatePermissions(c *gin.Context, request *requests.AdminRoleUpdateRequest, userModel *adminRole.AdminRole) {
+func (service *AdminRoleService) UpdatePermissions(c *gin.Context, request *requests.AdminRoleUpdatePermissionsRequest, userModel *adminRole.AdminRole) {
 
 	tx := service.app.DB.Begin()
 	defer func() {

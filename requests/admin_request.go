@@ -125,6 +125,10 @@ func VerityAdminRoleUpdate(app *core.App, obj interface{}) map[string][]string {
 	return errors
 }
 
+type AdminRoleUpdateMenusRequest struct {
+	MenuIDs []uint `json:"menu_ids"`
+}
+
 func VerityAdminRoleMenusUpdate(app *core.App, obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{}
@@ -132,6 +136,10 @@ func VerityAdminRoleMenusUpdate(app *core.App, obj interface{}) map[string][]str
 	errors := ValidateStruct(app, obj, messages)
 
 	return errors
+}
+
+type AdminRoleUpdatePermissionsRequest struct {
+	PermissionIDs []uint `json:"permission_ids"`
 }
 
 func VerityAdminRolePermissionsUpdate(app *core.App, obj interface{}) map[string][]string {

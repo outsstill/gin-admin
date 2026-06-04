@@ -79,8 +79,7 @@ func (uc *AdminRoleController) UpdateMenus(c *gin.Context) {
 	}
 
 	// 验证
-	request := requests.AdminRoleUpdateRequest{}
-	request.ID = userModel.ID
+	request := requests.AdminRoleUpdateMenusRequest{}
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminRoleMenusUpdate); !ok {
 		return
 	}
@@ -98,8 +97,7 @@ func (uc *AdminRoleController) UpdatePermissions(c *gin.Context) {
 	}
 
 	// 验证
-	request := requests.AdminRoleUpdateRequest{}
-	request.ID = userModel.ID
+	request := requests.AdminRoleUpdatePermissionsRequest{}
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminRolePermissionsUpdate); !ok {
 		return
 	}
