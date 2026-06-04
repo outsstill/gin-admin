@@ -15,16 +15,16 @@ import (
 
 type AdminUser struct {
 	model.BaseModel
-	Username       string                            `json:"username" gorm:"column:username;type:varchar(255)"`
-	Password       string                            `json:"-" gorm:"column:password;type:varchar(255)"`
-	Name           string                            `json:"name" gorm:"column:name;type:varchar(255)"`
-	AvatarFile     *file.File                        `json:"avatar" gorm:"foreignKey:AvatarId;references:ID"`
-	AvatarId       *uint64                           `json:"avatar_id" gorm:"column:avatar_id"`
-	Roles          []adminRole.AdminRole             `json:"roles" gorm:"many2many:admin_role_users;foreignKey:ID;joinForeignKey:UserID;references:ID;joinReferences:RoleID"`
-	Permissions    []adminPermission.AdminPermission `json:"permissions" gorm:"-"`
-	Menus          []adminMenu.AdminMenu             `json:"menus" gorm:"-"`
-	DashboardMenus []*RouteDTO                       `gorm:"-" json:"dashboardMenus"`
-	RealName       string                            `json:"realName" gorm:"-"`
+	Username      string                            `json:"username" gorm:"column:username;type:varchar(255)"`
+	Password      string                            `json:"-" gorm:"column:password;type:varchar(255)"`
+	Name          string                            `json:"name" gorm:"column:name;type:varchar(255)"`
+	AvatarFile    *file.File                        `json:"avatar" gorm:"foreignKey:AvatarId;references:ID"`
+	AvatarId      *uint64                           `json:"avatar_id" gorm:"column:avatar_id"`
+	Roles         []adminRole.AdminRole             `json:"roles" gorm:"many2many:admin_role_users;foreignKey:ID;joinForeignKey:UserID;references:ID;joinReferences:RoleID"`
+	Permissions   []adminPermission.AdminPermission `json:"permissions" gorm:"-"`
+	Menus         []adminMenu.AdminMenu             `json:"menus" gorm:"-"`
+	ChildrenMenus []*RouteDTO                       `gorm:"-" json:"childrenMenus"`
+	RealName      string                            `json:"realName" gorm:"-"`
 	model.CommonTimestampsField
 }
 

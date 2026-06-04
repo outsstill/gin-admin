@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/jwt"
 	"github.com/outsstill/gin-admin/pkg/response"
@@ -58,9 +57,9 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 				response.AuthFail(c, "找不到对应用户，用户可能已删除")
 				return
 			}
-			if !global.Config.IsProduction() {
-				fmt.Printf("GetStringID 11 :%s \n", userModel.GetStringID())
-			}
+			//if !global.Config.IsProduction() {
+			//	fmt.Printf("GetStringID 11 :%s \n", userModel.GetStringID())
+			//}
 			// 验证权限
 			// 3. 比对请求的 Method + 路由模板
 			isPass := false
@@ -94,9 +93,6 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 			}
 
 			if isPass {
-				if !global.Config.IsProduction() {
-					fmt.Printf("GetStringID 22 :%s \n", userModel.GetStringID())
-				}
 				// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 				c.Set("current_admin_user_id", userModel.GetStringID())
 				//c.Set("current_user_name", userModel.Name)
