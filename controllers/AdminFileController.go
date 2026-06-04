@@ -82,7 +82,7 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 	}
 
 	if obj != nil {
-		service.NewFileService(uc.App).Create(*obj)
+		service.NewFileService(uc.App).Create(obj)
 	}
 
 	response.Data(c, obj)
