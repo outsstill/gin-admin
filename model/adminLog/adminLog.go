@@ -18,5 +18,5 @@ type AdminLog struct {
 }
 
 func (model *AdminLog) TableName() string {
-	return "admin_operation_logs"
+	return "admin_logs"
 }

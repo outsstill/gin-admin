@@ -3,10 +3,12 @@ package middlewares
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
+	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model/adminLog"
 	"github.com/outsstill/gin-admin/pkg/auth"
 	service "github.com/outsstill/gin-admin/services"
@@ -54,6 +56,12 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 			adminLog.Ip = c.ClientIP()
 
 			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						data, _ := json.Marshal(adminLog)
+						global.Logger.ErrorString("OperationLog", "记录失败", string(data))
+					}
+				}()
 				service.NewAdminLogService(app).Create(adminLog)
 			}()
 		}
