@@ -61,8 +61,8 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 		admin.GET("/roles/all", arc.All)
 		admin.GET("/role/:id", arc.Get)
 		admin.POST("/role", arc.Store)
-		admin.PUT("/role/:id/menus", arc.Update)
-		admin.PUT("/role/:id/permissions", arc.Update)
+		admin.PUT("/role/:id/menus", arc.UpdateMenus)
+		admin.PUT("/role/:id/permissions", arc.UpdatePermissions)
 		admin.PUT("/role/:id", arc.Update)
 		admin.DELETE("/role/:id", arc.Delete)
 
