@@ -125,6 +125,24 @@ func VerityAdminRoleUpdate(app *core.App, obj interface{}) map[string][]string {
 	return errors
 }
 
+func VerityAdminRoleMenusUpdate(app *core.App, obj interface{}) map[string][]string {
+
+	messages := map[string]map[string]string{}
+
+	errors := ValidateStruct(app, obj, messages)
+
+	return errors
+}
+
+func VerityAdminRolePermissionsUpdate(app *core.App, obj interface{}) map[string][]string {
+
+	messages := map[string]map[string]string{}
+
+	errors := ValidateStruct(app, obj, messages)
+
+	return errors
+}
+
 // 菜单创建
 type AdminMenuStoreRequest struct {
 	Name     string `json:"name" validate:"required,unique=admin_menus;name"`

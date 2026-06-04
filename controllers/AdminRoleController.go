@@ -71,6 +71,44 @@ func (uc *AdminRoleController) Update(c *gin.Context) {
 	response.Data(c, userModel)
 }
 
+func (uc *AdminRoleController) UpdateMenus(c *gin.Context) {
+	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
+	if userModel.ID <= 0 {
+		response.Fail(c, "没有找到")
+		return
+	}
+
+	// 验证
+	request := requests.AdminRoleUpdateRequest{}
+	request.ID = userModel.ID
+	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminRoleMenusUpdate); !ok {
+		return
+	}
+
+	service.NewAdminRoleService(uc.App).UpdateMenus(c, &request, &userModel)
+
+	response.Data(c, userModel)
+}
+
+func (uc *AdminRoleController) UpdatePermissions(c *gin.Context) {
+	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
+	if userModel.ID <= 0 {
+		response.Fail(c, "没有找到")
+		return
+	}
+
+	// 验证
+	request := requests.AdminRoleUpdateRequest{}
+	request.ID = userModel.ID
+	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminRolePermissionsUpdate); !ok {
+		return
+	}
+
+	service.NewAdminRoleService(uc.App).UpdatePermissions(c, &request, &userModel)
+
+	response.Data(c, userModel)
+}
+
 func (uc *AdminRoleController) Delete(c *gin.Context) {
 	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
 	if userModel.ID <= 0 {

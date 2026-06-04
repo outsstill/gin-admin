@@ -83,32 +83,32 @@ func (service *AdminRoleService) Update(c *gin.Context, request *requests.AdminR
 	}()
 
 	// 查询菜单和权限
-	var permissions []adminPermission.AdminPermission
-	var menus []adminMenu.AdminMenu
-
-	if len(request.PermissionIDs) > 0 {
-		if err := tx.Where("id IN ?", request.PermissionIDs).Find(&permissions).Error; err != nil {
-			response.BadRequest(c, err, "权限查询失败")
-			return
-		}
-	}
-
-	if len(request.MenuIDs) > 0 {
-		if err := tx.Where("id IN ?", request.MenuIDs).Find(&menus).Error; err != nil {
-			response.BadRequest(c, err, "菜单查询失败")
-			return
-		}
-	}
-
-	// 替换关联权限和菜单
-	if err := tx.Model(&userModel).Association("Permissions").Replace(permissions); err != nil {
-		tx.Rollback()
-		return
-	}
-	if err := tx.Model(&userModel).Association("Menus").Replace(menus); err != nil {
-		tx.Rollback()
-		return
-	}
+	//var permissions []adminPermission.AdminPermission
+	//var menus []adminMenu.AdminMenu
+	//
+	//if len(request.PermissionIDs) > 0 {
+	//	if err := tx.Where("id IN ?", request.PermissionIDs).Find(&permissions).Error; err != nil {
+	//		response.BadRequest(c, err, "权限查询失败")
+	//		return
+	//	}
+	//}
+	//
+	//if len(request.MenuIDs) > 0 {
+	//	if err := tx.Where("id IN ?", request.MenuIDs).Find(&menus).Error; err != nil {
+	//		response.BadRequest(c, err, "菜单查询失败")
+	//		return
+	//	}
+	//}
+	//
+	//// 替换关联权限和菜单
+	//if err := tx.Model(&userModel).Association("Permissions").Replace(permissions); err != nil {
+	//	tx.Rollback()
+	//	return
+	//}
+	//if err := tx.Model(&userModel).Association("Menus").Replace(menus); err != nil {
+	//	tx.Rollback()
+	//	return
+	//}
 
 	//role := adminRole.AdminRole{
 	//	Name:        request.Name,
@@ -121,14 +121,95 @@ func (service *AdminRoleService) Update(c *gin.Context, request *requests.AdminR
 
 	userModel.Name = request.Name
 	userModel.Slug = request.Slug
-	userModel.Permissions = permissions
-	userModel.Menus = menus
+	//userModel.Permissions = permissions
+	//userModel.Menus = menus
 
 	//fmt.Printf("%T", userModel)
 
 	if err := tx.Save(&userModel).Error; err != nil {
 		tx.Rollback()
-		response.BadRequest(c, err, "创建角色失败")
+		response.BadRequest(c, err, "更新角色信息失败")
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		response.BadRequest(c, err, "提交事务失败")
+		return
+	}
+}
+
+func (service *AdminRoleService) UpdateMenus(c *gin.Context, request *requests.AdminRoleUpdateRequest, userModel *adminRole.AdminRole) {
+
+	tx := service.app.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "系统错误"})
+		}
+	}()
+
+	// 查询菜单和权限
+	var menus []adminMenu.AdminMenu
+
+	if len(request.MenuIDs) > 0 {
+		if err := tx.Where("id IN ?", request.MenuIDs).Find(&menus).Error; err != nil {
+			response.BadRequest(c, err, "菜单查询失败")
+			return
+		}
+	}
+
+	// 替换关联权限和菜单
+	if err := tx.Model(&userModel).Association("Menus").Replace(menus); err != nil {
+		tx.Rollback()
+		return
+	}
+	userModel.Menus = menus
+
+	if err := tx.Save(&userModel).Error; err != nil {
+		tx.Rollback()
+		response.BadRequest(c, err, "更新角色菜单失败")
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		response.BadRequest(c, err, "提交事务失败")
+		return
+	}
+}
+
+func (service *AdminRoleService) UpdatePermissions(c *gin.Context, request *requests.AdminRoleUpdateRequest, userModel *adminRole.AdminRole) {
+
+	tx := service.app.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "系统错误"})
+		}
+	}()
+
+	// 查询菜单和权限
+	var permissions []adminPermission.AdminPermission
+
+	if len(request.PermissionIDs) > 0 {
+		if err := tx.Where("id IN ?", request.PermissionIDs).Find(&permissions).Error; err != nil {
+			response.BadRequest(c, err, "权限查询失败")
+			return
+		}
+	}
+
+	// 替换关联权限和菜单
+	if err := tx.Model(&userModel).Association("Permissions").Replace(permissions); err != nil {
+		tx.Rollback()
+		return
+	}
+
+	userModel.Permissions = permissions
+
+	//fmt.Printf("%T", userModel)
+
+	if err := tx.Save(&userModel).Error; err != nil {
+		tx.Rollback()
+		response.BadRequest(c, err, "更新角色权限失败")
 		return
 	}
 
