@@ -161,12 +161,12 @@ func (uc *AdminFileController) Update(c *gin.Context) {
 	model.Storage = request.Storage
 	model.ETag = request.ETag
 	model.ContentType = request.ContentType
-	model.LastModified = request.LastModified
+	model.LastModified = time.Now()
 	model.Url = request.Url
-	model.UserId = request.UserId
 	model.GroupId = request.GroupId
 	model.Type = request.Type
-	service.NewFileService(uc.App).Save(model)
+	model.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
+	service.NewFileService(uc.App).Save(&model)
 
 	response.Data(c, model)
 }
