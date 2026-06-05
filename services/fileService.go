@@ -25,7 +25,6 @@ type FileService struct {
 func NewFileService(app *core.App, drive ...string) *FileService {
 
 	fileDrive := global.Config.Storage.Driver
-
 	if len(drive) > 0 {
 		fileDrive = drive[0]
 	}
