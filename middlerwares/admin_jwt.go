@@ -29,7 +29,10 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 		realIgnorePermissionPaths := make([]string, 0, len(ignorePermissionPaths))
 
 		for _, itemPath := range ignorePermissionPaths {
-			realIgnorePermissionPaths = append(realIgnorePermissionPaths, fmt.Sprintf("%s/%s", app.Prefix, itemPath))
+			if !strings.HasPrefix(itemPath, "/") {
+				itemPath = "/" + itemPath
+			}
+			realIgnorePermissionPaths = append(realIgnorePermissionPaths, fmt.Sprintf("%s%s", app.Prefix, itemPath))
 		}
 
 		ignorePaths := helpers.GetIgnorePaths(app.Prefix)
