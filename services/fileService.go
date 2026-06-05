@@ -117,7 +117,7 @@ func (service *FileService) DeleteFile(id string) error {
 		return err
 	}
 
-	service.Delete(&fileObj)
+	service.Delete(fileObj)
 
 	return nil
 }
