@@ -166,7 +166,7 @@ func (uc *AdminFileController) Update(c *gin.Context) {
 	model.UserId = request.UserId
 	model.GroupId = request.GroupId
 	model.Type = request.Type
-	service.NewFileService(uc.App).Save(&model)
+	service.NewFileService(uc.App).Save(model)
 
 	response.Data(c, model)
 }
