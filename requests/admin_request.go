@@ -320,7 +320,7 @@ type AdminFileStoreRequest struct {
 	OriginName   string     `json:"origin_name" validate:"required"`
 	Name         string     `json:"name"`
 	Key          string     `json:"key"`
-	GroupId      int        `json:"group_id"`
+	GroupId      int        `json:"group_id" validate:"required"`
 	Size         int64      `json:"size"`
 	Storage      string     `json:"storage"`
 	Path         string     `json:"path"`
@@ -341,6 +341,9 @@ func VerityAdminFileStore(app *core.App, obj interface{}) map[string][]string {
 		"OriginName": {
 			"required": "文件源名称 为必填项，参数名称 origin_name",
 		},
+		"GroupId": {
+			"required": "所属组 为必填项，参数名称 group_id",
+		},
 	}
 
 	errors := ValidateStruct(app, obj, messages)
@@ -354,7 +357,7 @@ type AdminFileUpdateRequest struct {
 	OriginName      string     `json:"origin_name" validate:"required"`
 	Name            string     `json:"name"`
 	Key             string     `json:"key"`
-	GroupId         int        `json:"group_id"`
+	GroupId         int        `json:"group_id" validate:"required"`
 	Size            int64      `json:"size"`
 	Storage         string     `json:"storage"`
 	Path            string     `json:"path"`
@@ -374,6 +377,9 @@ func VerityAdminFileUpdate(app *core.App, obj interface{}) map[string][]string {
 	messages := map[string]map[string]string{
 		"OriginName": {
 			"required": "文件源名称 为必填项，参数名称 origin_name",
+		},
+		"GroupId": {
+			"required": "所属组 为必填项，参数名称 group_id",
 		},
 	}
 
