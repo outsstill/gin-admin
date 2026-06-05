@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"errors"
+	"slices"
+	"strings"
 	"time"
 
 	fileModel "github.com/outsstill/gin-admin/model/file"
 	"github.com/outsstill/gin-admin/pkg/auth"
+	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
 	"github.com/outsstill/gin-admin/services"
@@ -47,10 +51,43 @@ func (uc *AdminFileController) Get(c *gin.Context) {
 	response.Data(c, user)
 }
 
+func (uc *AdminFileController) CheckStore(storage string, path string, url string) error {
+
+	storage = strings.ToLower(storage)
+
+	if !slices.Contains([]string{"oss", "local", "other"}, storage) {
+		return errors.New("错误的存储引擎")
+	}
+
+	if slices.Contains([]string{"oss", "local"}, storage) && helpers.Empty(path) {
+		return errors.New("必须填入 path")
+	}
+
+	if slices.Contains([]string{"other"}, storage) && helpers.Empty(url) {
+		return errors.New("选择外链存储,必须填入 url")
+	}
+
+	return nil
+}
+
+func (uc *AdminFileController) CheckUploadStorage(storage string) error {
+	storage = strings.ToLower(storage)
+
+	if !slices.Contains([]string{"oss", "local"}, storage) {
+		return errors.New("错误的存储引擎")
+	}
+	return nil
+}
+
 func (uc *AdminFileController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminFileStoreRequest{}
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminFileStore); !ok {
+		return
+	}
+
+	if err := uc.CheckStore(request.Storage, request.Path, request.Url); err != nil {
+		response.Fail(c, err.Error())
 		return
 	}
 
@@ -74,6 +111,12 @@ func (uc *AdminFileController) Store(c *gin.Context) {
 func (uc *AdminFileController) Upload(c *gin.Context) {
 
 	uploadStorage := c.PostForm("uploadStorage")
+
+	if err := uc.CheckUploadStorage(uploadStorage); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
 	obj, err := service.NewFileService(uc.App, uploadStorage).UploadFile(c)
 
 	if err != nil {
@@ -89,8 +132,7 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 }
 
 func (uc *AdminFileController) Update(c *gin.Context) {
-	uploadStorage := c.PostForm("uploadStorage")
-	model := service.NewFileService(uc.App, uploadStorage).Get(c.Param("id"))
+	model := service.NewFileService(uc.App).Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
@@ -100,6 +142,11 @@ func (uc *AdminFileController) Update(c *gin.Context) {
 	request := requests.AdminFileUpdateRequest{}
 	request.ID = model.ID
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminFileUpdate); !ok {
+		return
+	}
+
+	if err := uc.CheckStore(request.Storage, request.Path, request.Url); err != nil {
+		response.Fail(c, err.Error())
 		return
 	}
 

@@ -25,14 +25,14 @@ func VerityConfigModelStore(app *core.App, obj interface{}) map[string][]string 
 
 	messages := map[string]map[string]string{
 		"ConfigLabel": {
-			"required": "Label 为必填项，参数名称 label",
+			"required": "标签 为必填项，参数名称 config_label",
 		},
 		"ConfigKey": {
-			"required": "key 为必填项，参数名称 key",
-			"unique":   "Key 已经存在",
+			"required": "配置键 为必填项，参数名称 config_key",
+			"unique":   "配置键 已经存在",
 		},
 		"ConfigValue": {
-			"required": "Value 为必填项，参数名称 Value",
+			"required": "配置值 为必填项，参数名称 config_value",
 		},
 	}
 

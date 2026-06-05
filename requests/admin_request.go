@@ -317,7 +317,7 @@ func VerityAdminLogin(app *core.App, obj interface{}) map[string][]string {
 
 // 菜单创建
 type AdminFileStoreRequest struct {
-	OriginName   string     `json:"origin_name"`
+	OriginName   string     `json:"origin_name" validate:"required"`
 	Name         string     `json:"name"`
 	Key          string     `json:"key"`
 	GroupId      int        `json:"group_id"`
@@ -338,19 +338,8 @@ type AdminFileStoreRequest struct {
 func VerityAdminFileStore(app *core.App, obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
-		"Name": {
-			"required": "菜单名 为必填项，参数名称 name",
-			"unique":   "菜单名 已经存在",
-		},
-		"Uri": {
-			"required": "路径 为必填项，参数名称 uri",
-		},
-		"Order": {
-			"required": "排序 为必填项，参数名称 order",
-			"numeric":  "排序 为数字类型",
-		},
-		"ParentId": {
-			"numeric": "父菜单id 为数字类型",
+		"OriginName": {
+			"required": "文件源名称 为必填项，参数名称 origin_name",
 		},
 	}
 
@@ -362,7 +351,7 @@ func VerityAdminFileStore(app *core.App, obj interface{}) map[string][]string {
 // 文件更新
 type AdminFileUpdateRequest struct {
 	model.BaseModel            // 包含 unique 验证id规则的需要添加
-	OriginName      string     `json:"origin_name"`
+	OriginName      string     `json:"origin_name" validate:"required"`
 	Name            string     `json:"name"`
 	Key             string     `json:"key"`
 	GroupId         int        `json:"group_id"`
@@ -383,14 +372,8 @@ type AdminFileUpdateRequest struct {
 func VerityAdminFileUpdate(app *core.App, obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
-		"Name": {
-			"unique": "菜单名 已经存在",
-		},
-		"Order": {
-			"numeric": "排序 数字类型",
-		},
-		"ParentId": {
-			"numeric": "父菜单id 为数字类型",
+		"OriginName": {
+			"required": "文件源名称 为必填项，参数名称 origin_name",
 		},
 	}
 
