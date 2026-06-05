@@ -33,7 +33,7 @@ func (service *ConfigService) Delete(model *configModel.Config) (rowsAffected in
 	return result.RowsAffected
 }
 
-func (service *ConfigService) Get(idstr string) (model configModel.Config) {
+func (service *ConfigService) Get(idstr string) (model *configModel.Config) {
 	service.app.DB.Where("id", idstr).First(&model)
 	return
 }

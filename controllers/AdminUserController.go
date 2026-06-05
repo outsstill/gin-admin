@@ -51,35 +51,35 @@ func (uc *AdminUserController) Store(c *gin.Context) {
 }
 
 func (uc *AdminUserController) Update(c *gin.Context) {
-	userModel := service.NewAdminUserService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminUserService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
 	// 验证
 	request := requests.AdminUserUpdateRequest{}
-	request.ID = userModel.ID
+	request.ID = model.ID
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminUserUpdate); !ok {
 		return
 	}
 
-	service.NewAdminUserService(uc.App).Update(c, &request, &userModel)
+	service.NewAdminUserService(uc.App).Update(c, &request, model)
 
-	response.Data(c, userModel)
+	response.Data(c, model)
 }
 
 func (uc *AdminUserController) Delete(c *gin.Context) {
 
 	fmt.Printf("current_user_id :%v", auth.NewAuth(uc.App).CurrentAdminUser(c).ID)
 
-	userModel := service.NewAdminUserService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminUserService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewAdminUserService(uc.App).Delete(&userModel); res > 0 {
+	if res := service.NewAdminUserService(uc.App).Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

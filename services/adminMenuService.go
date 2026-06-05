@@ -33,7 +33,7 @@ func (service *AdminMenuService) Delete(model *adminMenu.AdminMenu) (rowsAffecte
 	return result.RowsAffected
 }
 
-func (service *AdminMenuService) Get(idstr string) (model adminMenu.AdminMenu) {
+func (service *AdminMenuService) Get(idstr string) (model *adminMenu.AdminMenu) {
 	service.app.DB.Where("id", idstr).First(&model)
 	return
 }

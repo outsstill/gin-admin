@@ -53,27 +53,27 @@ func (uc *AdminRoleController) Store(c *gin.Context) {
 }
 
 func (uc *AdminRoleController) Update(c *gin.Context) {
-	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
 	// 验证
 	request := requests.AdminRoleUpdateRequest{}
-	request.ID = userModel.ID
+	request.ID = model.ID
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminRoleUpdate); !ok {
 		return
 	}
 
-	service.NewAdminRoleService(uc.App).Update(c, &request, &userModel)
+	service.NewAdminRoleService(uc.App).Update(c, &request, model)
 
-	response.Data(c, userModel)
+	response.Data(c, model)
 }
 
 func (uc *AdminRoleController) UpdateMenus(c *gin.Context) {
-	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
@@ -84,14 +84,14 @@ func (uc *AdminRoleController) UpdateMenus(c *gin.Context) {
 		return
 	}
 
-	service.NewAdminRoleService(uc.App).UpdateMenus(c, &request, &userModel)
+	service.NewAdminRoleService(uc.App).UpdateMenus(c, &request, model)
 
-	response.Data(c, userModel)
+	response.Data(c, model)
 }
 
 func (uc *AdminRoleController) UpdatePermissions(c *gin.Context) {
-	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
@@ -102,19 +102,19 @@ func (uc *AdminRoleController) UpdatePermissions(c *gin.Context) {
 		return
 	}
 
-	service.NewAdminRoleService(uc.App).UpdatePermissions(c, &request, &userModel)
+	service.NewAdminRoleService(uc.App).UpdatePermissions(c, &request, model)
 
-	response.Data(c, userModel)
+	response.Data(c, model)
 }
 
 func (uc *AdminRoleController) Delete(c *gin.Context) {
-	userModel := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminRoleService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewAdminRoleService(uc.App).Delete(&userModel); res > 0 {
+	if res := service.NewAdminRoleService(uc.App).Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

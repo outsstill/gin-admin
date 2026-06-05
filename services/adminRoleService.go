@@ -224,7 +224,7 @@ func (service *AdminRoleService) Delete(model *adminRole.AdminRole) (rowsAffecte
 	return result.RowsAffected
 }
 
-func (service *AdminRoleService) Get(idstr string) (model adminRole.AdminRole) {
+func (service *AdminRoleService) Get(idstr string) (model *adminRole.AdminRole) {
 	service.app.DB.Where("id", idstr).Preload("Menus").Preload("Permissions").First(&model)
 	return
 }

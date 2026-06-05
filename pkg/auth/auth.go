@@ -40,32 +40,31 @@ func (a *Auth) AttemptAdmin(email string, password string) (adminUser.AdminUser,
 }
 
 // CurrentAdminUser 从 gin.context 中获取当前登录用户
-func (a *Auth) CurrentAdminUser(c *gin.Context) adminUser.AdminUser {
+func (a *Auth) CurrentAdminUser(c *gin.Context) *adminUser.AdminUser {
 	userService := service.NewAdminUserService(a.app)
-	userModel := adminUser.AdminUser{}
-	userModel = userService.Get(cast.ToString(c.MustGet("current_admin_user_id")))
+	model := userService.Get(cast.ToString(c.MustGet("current_admin_user_id")))
 
-	if userModel.ID <= 0 {
+	if model.ID <= 0 {
 		global.Logger.LogIf(errors.New("无法获取用户"))
 		//response.Fail(c, "没有找到")
-		return adminUser.AdminUser{}
+		return &adminUser.AdminUser{}
 	}
 
 	if c.GetInt("menus_on") > 0 || cast.ToInt(c.Query("menus_on")) > 0 {
 		// 获取账号的显示菜单
-		menus, errs := userService.GetUserMenus(userModel.ID)
+		menus, errs := userService.GetUserMenus(model.ID)
 
 		if errs != nil {
 			global.Logger.LogIf(errs)
 
-			return userModel
+			return model
 		}
 
-		userModel.Menus = menus
-		userModel.ChildrenMenus = adminUser.BuildVbenRoutes(menus) // 一些前端框架需要带 children 的侧边路由
+		model.Menus = menus
+		model.ChildrenMenus = adminUser.BuildVbenRoutes(menus) // 一些前端框架需要带 children 的侧边路由
 	}
 	// db is now a *DB value
-	return userModel
+	return model
 }
 
 // CurrentUID 从 gin.context 中获取当前登录用户 ID

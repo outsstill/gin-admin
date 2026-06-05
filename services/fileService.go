@@ -117,7 +117,7 @@ func (service *FileService) DeleteFile(id string) error {
 		return err
 	}
 
-	service.Delete(&fileObj)
+	service.Delete(fileObj)
 
 	return nil
 }
@@ -136,7 +136,7 @@ func (service *FileService) Delete(model *fileModel.File) (rowsAffected int64) {
 	return result.RowsAffected
 }
 
-func (service *FileService) Get(idstr string) (model fileModel.File) {
+func (service *FileService) Get(idstr string) (model *fileModel.File) {
 	service.app.DB.Where("id", idstr).First(&model)
 	return
 }

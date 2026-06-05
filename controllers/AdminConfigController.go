@@ -97,7 +97,7 @@ func (uc *AdminConfigController) Update(c *gin.Context) {
 	model.Placeholder = request.Placeholder
 	model.IsRequired = request.IsRequired
 
-	service.NewConfigService(uc.App).Save(&model)
+	service.NewConfigService(uc.App).Save(model)
 
 	response.Data(c, model)
 }
@@ -109,7 +109,7 @@ func (uc *AdminConfigController) Delete(c *gin.Context) {
 		return
 	}
 
-	if res := service.NewConfigService(uc.App).Delete(&model); res > 0 {
+	if res := service.NewConfigService(uc.App).Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

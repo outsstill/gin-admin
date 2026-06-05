@@ -65,39 +65,39 @@ func (uc *AdminPermissionController) Store(c *gin.Context) {
 }
 
 func (uc *AdminPermissionController) Update(c *gin.Context) {
-	userModel := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
 	// 验证
 	request := requests.AdminPermissionUpdateRequest{}
-	request.ID = userModel.ID
+	request.ID = model.ID
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminPermissionUpdate); !ok {
 		return
 	}
 
-	userModel.HttpMethod = strings.ToLower(request.HttpMethod)
-	userModel.HttpPath = request.HttpPath
-	userModel.Name = request.Name
-	userModel.Slug = request.Slug
-	userModel.Order = request.Order
-	userModel.ParentId = request.ParentId
+	model.HttpMethod = strings.ToLower(request.HttpMethod)
+	model.HttpPath = request.HttpPath
+	model.Name = request.Name
+	model.Slug = request.Slug
+	model.Order = request.Order
+	model.ParentId = request.ParentId
 
-	service.NewAdminPermissionService(uc.App).Save(&userModel)
+	service.NewAdminPermissionService(uc.App).Save(model)
 
-	response.Data(c, userModel)
+	response.Data(c, model)
 }
 
 func (uc *AdminPermissionController) Delete(c *gin.Context) {
-	userModel := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewAdminPermissionService(uc.App).Delete(&userModel); res > 0 {
+	if res := service.NewAdminPermissionService(uc.App).Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

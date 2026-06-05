@@ -64,39 +64,39 @@ func (uc *AdminMenuController) Store(c *gin.Context) {
 }
 
 func (uc *AdminMenuController) Update(c *gin.Context) {
-	userModel := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
 	// 验证
 	request := requests.AdminMenuUpdateRequest{}
-	request.ID = userModel.ID
+	request.ID = model.ID
 	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminMenuUpdate); !ok {
 		return
 	}
 
-	userModel.Uri = request.Uri
-	userModel.Path = request.Path
-	userModel.Icon = request.Icon
-	userModel.Name = request.Name
-	userModel.Order = request.Order
-	userModel.ParentId = request.ParentId
+	model.Uri = request.Uri
+	model.Path = request.Path
+	model.Icon = request.Icon
+	model.Name = request.Name
+	model.Order = request.Order
+	model.ParentId = request.ParentId
 
-	service.NewAdminMenuService(uc.App).Save(&userModel)
+	service.NewAdminMenuService(uc.App).Save(model)
 
-	response.Data(c, userModel)
+	response.Data(c, model)
 }
 
 func (uc *AdminMenuController) Delete(c *gin.Context) {
-	userModel := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
-	if userModel.ID <= 0 {
+	model := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
+	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewAdminMenuService(uc.App).Delete(&userModel); res > 0 {
+	if res := service.NewAdminMenuService(uc.App).Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

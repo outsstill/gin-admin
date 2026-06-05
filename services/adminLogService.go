@@ -28,14 +28,14 @@ func (service *AdminLogService) Save(model *adminLog.AdminLog) (rowsAffected int
 	return result.RowsAffected
 }
 
+func (service *AdminLogService) Get(idstr string) (model *adminLog.AdminLog) {
+	service.app.DB.Where("id", idstr).Preload("AdminUser").First(&model)
+	return
+}
+
 func (service *AdminLogService) Delete(model *adminLog.AdminLog) (rowsAffected int64) {
 	result := service.app.DB.Delete(model)
 	return result.RowsAffected
-}
-
-func (service *AdminLogService) Get(idstr string) (model adminLog.AdminLog) {
-	service.app.DB.Where("id", idstr).Preload("AdminUser").First(&model)
-	return
 }
 
 func (service *AdminLogService) All() (models []adminLog.AdminLog) {

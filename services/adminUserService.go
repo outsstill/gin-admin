@@ -194,7 +194,7 @@ func (service *AdminUserService) Delete(model *adminUser.AdminUser) (rowsAffecte
 	return result.RowsAffected
 }
 
-func (service *AdminUserService) Get(idstr string) (model adminUser.AdminUser) {
+func (service *AdminUserService) Get(idstr string) (model *adminUser.AdminUser) {
 	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
 	return
 }

@@ -33,7 +33,7 @@ func (service *AdminPermissionService) Delete(model *adminPermission.AdminPermis
 	return result.RowsAffected
 }
 
-func (service *AdminPermissionService) Get(idstr string) (model adminPermission.AdminPermission) {
+func (service *AdminPermissionService) Get(idstr string) (model *adminPermission.AdminPermission) {
 	service.app.DB.Where("id", idstr).First(&model)
 	return
 }

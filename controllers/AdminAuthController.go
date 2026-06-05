@@ -122,7 +122,7 @@ func (ac *AdminAuthController) UpdateProfile(c *gin.Context) {
 		user.Name = request.Name
 	}
 
-	service.NewAdminUserService(ac.App).Save(&user)
+	service.NewAdminUserService(ac.App).Save(user)
 
 	response.Data(c, user)
 }
@@ -141,7 +141,7 @@ func (ac *AdminAuthController) UpdatePassword(c *gin.Context) {
 		user.Password = request.Password
 	}
 
-	service.NewAdminUserService(ac.App).Save(&user)
+	service.NewAdminUserService(ac.App).Save(user)
 
 	response.Data(c, user)
 }
