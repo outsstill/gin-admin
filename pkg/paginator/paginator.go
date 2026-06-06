@@ -101,7 +101,7 @@ func (p *Paginator) initProperties(perPage int, baseURL string) {
 	p.PerPage = p.getPerPage(perPage)
 
 	// 排序参数（控制器中以验证过这些参数，可放心使用）
-	p.Order = p.ctx.DefaultQuery(global.Config.Paging.UrlQueryOrder, "asc")
+	p.Order = p.ctx.DefaultQuery(global.Config.Paging.UrlQueryOrder, "desc")
 	p.Sort = p.ctx.DefaultQuery(global.Config.Paging.UrlQuerySort, "id")
 
 	p.TotalCount = p.getTotalCount()
