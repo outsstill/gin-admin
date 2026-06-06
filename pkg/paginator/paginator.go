@@ -56,7 +56,7 @@ type Paginator struct {
 //	       app.APIURL(database.TableName(&Topic{})),
 //	       perPage,
 //	   )
-func Paginate(c *gin.Context, db *gorm.DB, data interface{}, baseURL string, perPage int) Paging {
+func Paginate(c *gin.Context, db *gorm.DB, data interface{}, baseURL string, perPage int, defaultOrderColum ...string) Paging {
 
 	// 初始化 Paginator 实例
 	p := &Paginator{
@@ -65,13 +65,19 @@ func Paginate(c *gin.Context, db *gorm.DB, data interface{}, baseURL string, per
 	}
 	p.initProperties(perPage, baseURL)
 
+	defaultOrder := "id"
+	if len(defaultOrderColum) > 0 {
+		defaultOrder = defaultOrderColum[0]
+	}
+
 	// 查询数据库
 	err := p.query.Preload(clause.Associations). // 读取关联
-							Order(fmt.Sprintf("`%s`", p.Sort) + " " + p.Order). // 排序
-							Limit(p.PerPage).
-							Offset(p.Offset).
-							Find(data).
-							Error
+		Order(fmt.Sprintf("`%s`", p.Sort) + " " + p.Order). // 排序
+		Order(fmt.Sprintf("`%s` DESC", defaultOrder)).
+		Limit(p.PerPage).
+		Offset(p.Offset).
+		Find(data).
+		Error
 
 	// 数据库出错
 	if err != nil {

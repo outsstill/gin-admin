@@ -25,6 +25,7 @@ type AdminUser struct {
 	Menus         []adminMenu.AdminMenu             `json:"menus" gorm:"-"`
 	ChildrenMenus []*RouteDTO                       `gorm:"-" json:"childrenMenus"`
 	RealName      string                            `json:"realName" gorm:"-"`
+	IsSuper       bool                              `json:"is_super" gorm:"-"`
 	model.CommonTimestampsField
 }
 
@@ -33,7 +34,7 @@ func (model *AdminUser) TableName() string {
 }
 
 func (model *AdminUser) IsSuperAdmin() bool {
-	return model.ID == 1
+	return model.IsSuper
 }
 
 // ComparePassword 密码是否正确
