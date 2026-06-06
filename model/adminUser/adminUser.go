@@ -25,7 +25,7 @@ type AdminUser struct {
 	Menus         []adminMenu.AdminMenu             `json:"menus" gorm:"-"`
 	ChildrenMenus []*RouteDTO                       `gorm:"-" json:"childrenMenus"`
 	RealName      string                            `json:"realName" gorm:"-"`
-	IsSuper       bool                              `json:"is_super" gorm:"-"`
+	IsSuper       bool                              `json:"is_super" gorm:"column:is_super"`
 	model.CommonTimestampsField
 }
 
