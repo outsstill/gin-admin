@@ -69,7 +69,7 @@ type RouteMeta struct {
 	NoBasicLayout bool   `json:"noBasicLayout,omitempty"`
 }
 
-func BuildVbenRoutes(list []adminMenu.AdminMenu) []*RouteDTO {
+func BuildChildRoutes(list []adminMenu.AdminMenu) []*RouteDTO {
 
 	menuMap := make(map[uint64]*RouteDTO)
 	var roots []*RouteDTO

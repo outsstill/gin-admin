@@ -59,7 +59,7 @@ func (service *AuthService) CurrentAdminUser(c *gin.Context) *adminUser.AdminUse
 		}
 
 		model.Menus = menus
-		model.ChildrenMenus = adminUser.BuildVbenRoutes(menus) // 一些前端框架需要带 children 的侧边路由
+		model.ChildrenMenus = adminUser.BuildChildRoutes(menus) // 一些前端框架需要带 children 的侧边路由
 	}
 	// db is now a *DB value
 	return model
