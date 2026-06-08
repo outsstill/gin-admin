@@ -11,7 +11,6 @@ import (
 	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model/adminLog"
 	"github.com/outsstill/gin-admin/pkg/auth"
-	service "github.com/outsstill/gin-admin/services"
 	"github.com/spf13/cast"
 )
 
@@ -62,7 +61,7 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 						global.Logger.ErrorString("OperationLog", "记录失败", string(data))
 					}
 				}()
-				service.NewAdminLogService(app).Create(adminLog)
+				app.GetAdminLogService().Create(adminLog)
 			}()
 		}
 	}

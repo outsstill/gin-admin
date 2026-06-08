@@ -2,44 +2,44 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/model/adminMenu"
 	"github.com/outsstill/gin-admin/pkg/paginator"
+	"gorm.io/gorm"
 )
 
 type AdminMenuService struct {
-	app *core.App
+	DB *gorm.DB
 }
 
-func NewAdminMenuService(app *core.App) *AdminMenuService {
+func NewAdminMenuService(db *gorm.DB) *AdminMenuService {
 	return &AdminMenuService{
-		app: app,
+		DB: db,
 	}
 }
 
 func (service *AdminMenuService) Create(model *adminMenu.AdminMenu) {
-	service.app.DB.Create(model)
+	service.DB.Create(model)
 }
 
 func (service *AdminMenuService) Save(model *adminMenu.AdminMenu) (rowsAffected int64) {
-	result := service.app.DB.Save(model)
+	result := service.DB.Save(model)
 	return result.RowsAffected
 }
 
 func (service *AdminMenuService) Delete(model *adminMenu.AdminMenu) (rowsAffected int64) {
-	result := service.app.DB.Delete(model)
+	result := service.DB.Delete(model)
 	return result.RowsAffected
 }
 
 func (service *AdminMenuService) Get(idstr string) (model *adminMenu.AdminMenu) {
-	service.app.DB.Where("id", idstr).First(&model)
+	service.DB.Where("id", idstr).First(&model)
 	return
 }
 
 func (service *AdminMenuService) All() (models []adminMenu.AdminMenu) {
-	service.app.DB.Find(&models)
+	service.DB.Find(&models)
 	return
 }
 
@@ -47,7 +47,7 @@ func (service *AdminMenuService) All() (models []adminMenu.AdminMenu) {
 func (service *AdminMenuService) Paginate(c *gin.Context, perPage int) (users []adminMenu.AdminMenu, paging paginator.Paging) {
 	paging = paginator.Paginate(
 		c,
-		service.app.DB.Model(adminMenu.AdminMenu{}),
+		service.DB.Model(adminMenu.AdminMenu{}),
 		&users,
 		global.Config.VADMINURL(model.TableName(&adminMenu.AdminMenu{})),
 		perPage,

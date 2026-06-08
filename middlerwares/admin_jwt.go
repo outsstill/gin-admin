@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/jwt"
 	"github.com/outsstill/gin-admin/pkg/response"
-	service "github.com/outsstill/gin-admin/services"
-
-	"github.com/gin-gonic/gin"
 )
 
 func AuthAdminJWT(app *core.App) gin.HandlerFunc {
@@ -55,7 +53,7 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 			}
 
 			// JWT 解析成功，设置用户信息
-			userModel := service.NewAdminUserService(app).Get(claims.UserID)
+			userModel := app.GetAdminUserService().Get(claims.UserID)
 			if userModel.ID == 0 {
 				response.AuthFail(c, "找不到对应用户，用户可能已删除")
 				return
@@ -75,7 +73,7 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 				if userModel.IsSuperAdmin() {
 					isPass = true
 				} else {
-					perms, err := service.NewAdminUserService(app).GetUserPermissions(userModel.ID)
+					perms, err := app.GetAdminUserService().GetUserPermissions(userModel.ID)
 					if err != nil {
 						response.BadRequest(c, err, "权限加载失败")
 						return

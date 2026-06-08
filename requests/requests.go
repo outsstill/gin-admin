@@ -5,14 +5,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/pkg/captcha"
+	"github.com/outsstill/gin-admin/pkg/redis"
 	"github.com/outsstill/gin-admin/pkg/response"
+	"gorm.io/gorm"
 )
 
-type ValidatorFunc func(app *core.App, obj interface{}) map[string][]string
+type ValidatorFunc func(db *gorm.DB, obj interface{}) map[string][]string
 
-func ValidateFunc(c *gin.Context, app *core.App, obj interface{}, handler ValidatorFunc) bool {
+func ValidateFunc(c *gin.Context, db *gorm.DB, obj interface{}, handler ValidatorFunc) bool {
 
 	// 1. 解析请求，支持 JSON 数据、表单请求和 URL Query
 	if err := c.ShouldBind(obj); err != nil {
@@ -23,7 +24,7 @@ func ValidateFunc(c *gin.Context, app *core.App, obj interface{}, handler Valida
 	c.Set("validate_data", obj)
 
 	// 2. 表单验证
-	errs := handler(app, obj)
+	errs := handler(db, obj)
 
 	// 3. 判断验证是否通过
 	if len(errs) > 0 {
@@ -35,7 +36,7 @@ func ValidateFunc(c *gin.Context, app *core.App, obj interface{}, handler Valida
 }
 
 // 通用验证函数
-func ValidateStruct(app *core.App, data interface{}, messages map[string]map[string]string) map[string][]string {
+func ValidateStruct(db *gorm.DB, data interface{}, messages map[string]map[string]string) map[string][]string {
 	validate := validator.New()
 
 	// 注册 unique 自定义验证器
@@ -47,7 +48,7 @@ func ValidateStruct(app *core.App, data interface{}, messages map[string]map[str
 		tableName := parts[0]
 		columnName := parts[1]
 
-		var query = app.DB.Table(tableName).Where(columnName+" = ?", fl.Field().Interface())
+		var query = db.Table(tableName).Where(columnName+" = ?", fl.Field().Interface())
 
 		if len(parts) == 4 {
 			// 更新时：排除自身 ID
@@ -96,8 +97,8 @@ func ValidateStruct(app *core.App, data interface{}, messages map[string]map[str
 	return errs
 }
 
-func ValidateCaptcha(app *core.App, captchaID, captchaAnswer string, errs map[string][]string) map[string][]string {
-	if ok := captcha.NewCaptcha(app).VerifyCaptcha(captchaID, captchaAnswer); !ok {
+func ValidateCaptcha(redis *redis.RedisClient, captchaID, captchaAnswer string, errs map[string][]string) map[string][]string {
+	if ok := captcha.NewCaptcha(redis).VerifyCaptcha(captchaID, captchaAnswer); !ok {
 		errs["captcha_answer"] = append(errs["captcha_answer"], "图片验证码错误")
 	}
 	return errs

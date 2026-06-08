@@ -4,7 +4,6 @@ import (
 	"github.com/outsstill/gin-admin/model/adminLog"
 	"github.com/outsstill/gin-admin/pkg/auth"
 	"github.com/outsstill/gin-admin/pkg/response"
-	service "github.com/outsstill/gin-admin/services"
 	"github.com/spf13/cast"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +21,7 @@ func NewAdminLogController(base *BaseAPIController) *AdminLogController {
 
 func (uc *AdminLogController) Index(c *gin.Context) {
 
-	data, pager := service.NewAdminLogService(uc.App).Paginate(c, uc.GetPerPage(c))
+	data, pager := uc.App.GetAdminLogService().Paginate(c, uc.GetPerPage(c))
 
 	response.Data(c, gin.H{
 		"data":  data,
@@ -31,11 +30,11 @@ func (uc *AdminLogController) Index(c *gin.Context) {
 }
 
 func (uc *AdminLogController) All(c *gin.Context) {
-	response.Data(c, service.NewAdminLogService(uc.App).All())
+	response.Data(c, uc.App.GetAdminLogService().All())
 }
 
 func (uc *AdminLogController) Get(c *gin.Context) {
-	response.Data(c, service.NewAdminLogService(uc.App).Get(c.Param("id")))
+	response.Data(c, uc.App.GetAdminLogService().Get(c.Param("id")))
 }
 
 func (uc *AdminLogController) Store(c *gin.Context) {
@@ -44,7 +43,7 @@ func (uc *AdminLogController) Store(c *gin.Context) {
 		UserId: cast.ToUint64(auth.CurrentAdminUID(c)),
 	}
 
-	service.NewAdminLogService(uc.App).Create(u)
+	uc.App.GetAdminLogService().Create(u)
 
 	response.Data(c, u)
 }

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/model/adminMenu"
@@ -16,21 +15,22 @@ import (
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
 	"github.com/spf13/cast"
+	"gorm.io/gorm"
 )
 
 type AdminUserService struct {
-	app *core.App
+	DB *gorm.DB
 }
 
-func NewAdminUserService(app *core.App) *AdminUserService {
+func NewAdminUserService(db *gorm.DB) *AdminUserService {
 	return &AdminUserService{
-		app: app,
+		DB: db,
 	}
 }
 
 func (service *AdminUserService) GetUserPermissions(userID uint64) ([]adminPermission.AdminPermission, error) {
 	var user adminUser.AdminUser
-	if err := service.app.DB.
+	if err := service.DB.
 		Preload("Roles.Permissions").
 		Where("id = ?", userID).
 		First(&user).Error; err != nil {
@@ -38,7 +38,7 @@ func (service *AdminUserService) GetUserPermissions(userID uint64) ([]adminPermi
 	}
 
 	if user.IsSuperAdmin() {
-		return NewAdminPermissionService(service.app).All(), nil
+		return NewAdminPermissionService(service.DB).All(), nil
 	}
 
 	permissionMap := make(map[uint64]adminPermission.AdminPermission)
@@ -58,7 +58,7 @@ func (service *AdminUserService) GetUserPermissions(userID uint64) ([]adminPermi
 
 func (service *AdminUserService) GetUserMenus(userID uint64) ([]adminMenu.AdminMenu, error) {
 	var user adminUser.AdminUser
-	if err := service.app.DB.
+	if err := service.DB.
 		Preload("Roles.Menus").
 		Where("id = ?", userID).
 		First(&user).Error; err != nil {
@@ -68,7 +68,7 @@ func (service *AdminUserService) GetUserMenus(userID uint64) ([]adminMenu.AdminM
 	var menus []adminMenu.AdminMenu
 
 	if user.IsSuperAdmin() {
-		return NewAdminMenuService(service.app).All(), nil
+		return NewAdminMenuService(service.DB).All(), nil
 	}
 
 	menuMap := make(map[uint64]adminMenu.AdminMenu)
@@ -87,7 +87,7 @@ func (service *AdminUserService) GetUserMenus(userID uint64) ([]adminMenu.AdminM
 
 // Create 创建用户，通过 User.ID 来判断是否创建成功
 func (service *AdminUserService) Create(c *gin.Context, request *requests.AdminUserStoreRequest) {
-	tx := service.app.DB.Begin()
+	tx := service.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -130,7 +130,7 @@ func (service *AdminUserService) Create(c *gin.Context, request *requests.AdminU
 
 func (service *AdminUserService) Update(c *gin.Context, request *requests.AdminUserUpdateRequest, userModel *adminUser.AdminUser) {
 
-	tx := service.app.DB.Begin()
+	tx := service.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -185,17 +185,17 @@ func (service *AdminUserService) Update(c *gin.Context, request *requests.AdminU
 }
 
 func (service *AdminUserService) Save(model *adminUser.AdminUser) (rowsAffected int64) {
-	result := service.app.DB.Save(model)
+	result := service.DB.Save(model)
 	return result.RowsAffected
 }
 
 func (service *AdminUserService) Delete(model *adminUser.AdminUser) (rowsAffected int64) {
-	result := service.app.DB.Delete(model)
+	result := service.DB.Delete(model)
 	return result.RowsAffected
 }
 
 func (service *AdminUserService) Get(idstr string) (model *adminUser.AdminUser) {
-	service.app.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
+	service.DB.Where("id", idstr).Preload("Roles").Preload("AvatarFile").First(&model)
 	return
 }
 
@@ -203,7 +203,7 @@ func (service *AdminUserService) Get(idstr string) (model *adminUser.AdminUser) 
 func (service *AdminUserService) Paginate(c *gin.Context, perPage int) (users []adminUser.AdminUser, paging paginator.Paging) {
 	paging = paginator.Paginate(
 		c,
-		service.app.DB.Model(adminUser.AdminUser{}),
+		service.DB.Model(adminUser.AdminUser{}),
 		&users,
 		global.Config.VADMINURL(model.TableName(&adminUser.AdminUser{})),
 		perPage,
@@ -213,7 +213,7 @@ func (service *AdminUserService) Paginate(c *gin.Context, perPage int) (users []
 
 // GetByMulti 通过 手机号/Email/用户名 来获取用户
 func (service *AdminUserService) GetByMulti(loginID string) (model adminUser.AdminUser) {
-	service.app.DB.
+	service.DB.
 		Where("username = ?", loginID).
 		First(&model)
 	return

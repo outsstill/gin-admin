@@ -4,7 +4,6 @@ import (
 	configModel "github.com/outsstill/gin-admin/model/config"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
-	service "github.com/outsstill/gin-admin/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +20,7 @@ func NewAdminConfigController(base *BaseAPIController) *AdminConfigController {
 
 func (uc *AdminConfigController) Index(c *gin.Context) {
 
-	data, pager := service.NewConfigService(uc.App).Paginate(c, uc.GetPerPage(c))
+	data, pager := uc.App.GetConfigService().Paginate(c, uc.GetPerPage(c))
 
 	response.Data(c, gin.H{
 		"data":  data,
@@ -30,21 +29,21 @@ func (uc *AdminConfigController) Index(c *gin.Context) {
 }
 
 func (uc *AdminConfigController) All(c *gin.Context) {
-	response.Data(c, service.NewConfigService(uc.App).All())
+	response.Data(c, uc.App.GetConfigService().All())
 }
 
 func (uc *AdminConfigController) AllShow(c *gin.Context) {
-	response.Data(c, service.NewConfigService(uc.App).AllShow())
+	response.Data(c, uc.App.GetConfigService().AllShow())
 }
 
 func (uc *AdminConfigController) Get(c *gin.Context) {
-	response.Data(c, service.NewConfigService(uc.App).Get(c.Param("id")))
+	response.Data(c, uc.App.GetConfigService().Get(c.Param("id")))
 }
 
 func (uc *AdminConfigController) Store(c *gin.Context) {
 	// 验证
 	request := requests.ConfigModelStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityConfigModelStore); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityConfigModelStore); !ok {
 		return
 	}
 
@@ -64,13 +63,13 @@ func (uc *AdminConfigController) Store(c *gin.Context) {
 		IsRequired:  request.IsRequired,
 	}
 
-	service.NewConfigService(uc.App).Create(u)
+	uc.App.GetConfigService().Create(u)
 
 	response.Data(c, u)
 }
 
 func (uc *AdminConfigController) Update(c *gin.Context) {
-	model := service.NewConfigService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetConfigService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
@@ -79,7 +78,7 @@ func (uc *AdminConfigController) Update(c *gin.Context) {
 	// 验证
 	request := requests.ConfigModelUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityConfigModelUpdate); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityConfigModelUpdate); !ok {
 		return
 	}
 
@@ -97,19 +96,19 @@ func (uc *AdminConfigController) Update(c *gin.Context) {
 	model.Placeholder = request.Placeholder
 	model.IsRequired = request.IsRequired
 
-	service.NewConfigService(uc.App).Save(model)
+	uc.App.GetConfigService().Save(model)
 
 	response.Data(c, model)
 }
 
 func (uc *AdminConfigController) Delete(c *gin.Context) {
-	model := service.NewConfigService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetConfigService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewConfigService(uc.App).Delete(model); res > 0 {
+	if res := uc.App.GetConfigService().Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

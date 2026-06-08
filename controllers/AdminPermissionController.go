@@ -7,7 +7,6 @@ import (
 	"github.com/outsstill/gin-admin/model/adminPermission"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
-	service "github.com/outsstill/gin-admin/services"
 )
 
 type AdminPermissionController struct {
@@ -22,7 +21,7 @@ func NewAdminPermissionController(base *BaseAPIController) *AdminPermissionContr
 
 func (uc *AdminPermissionController) Index(c *gin.Context) {
 
-	data, pager := service.NewAdminPermissionService(uc.App).Paginate(c, uc.GetPerPage(c))
+	data, pager := uc.App.GetAdminPermissionService().Paginate(c, uc.GetPerPage(c))
 
 	response.Data(c, gin.H{
 		"data":  data,
@@ -32,14 +31,14 @@ func (uc *AdminPermissionController) Index(c *gin.Context) {
 
 func (uc *AdminPermissionController) All(c *gin.Context) {
 
-	models := service.NewAdminPermissionService(uc.App).All()
+	models := uc.App.GetAdminPermissionService().All()
 
 	response.Data(c, models)
 }
 
 func (uc *AdminPermissionController) Get(c *gin.Context) {
 
-	user := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	user := uc.App.GetAdminPermissionService().Get(c.Param("id"))
 
 	response.Data(c, user)
 }
@@ -47,7 +46,7 @@ func (uc *AdminPermissionController) Get(c *gin.Context) {
 func (uc *AdminPermissionController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminPermissionStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminPermissionStore); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminPermissionStore); !ok {
 		return
 	}
 
@@ -59,13 +58,13 @@ func (uc *AdminPermissionController) Store(c *gin.Context) {
 		Order:      request.Order,
 		ParentId:   request.ParentId,
 	}
-	service.NewAdminPermissionService(uc.App).Create(u)
+	uc.App.GetAdminPermissionService().Create(u)
 
 	response.Data(c, u)
 }
 
 func (uc *AdminPermissionController) Update(c *gin.Context) {
-	model := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetAdminPermissionService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
@@ -74,7 +73,7 @@ func (uc *AdminPermissionController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminPermissionUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminPermissionUpdate); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminPermissionUpdate); !ok {
 		return
 	}
 
@@ -85,19 +84,19 @@ func (uc *AdminPermissionController) Update(c *gin.Context) {
 	model.Order = request.Order
 	model.ParentId = request.ParentId
 
-	service.NewAdminPermissionService(uc.App).Save(model)
+	uc.App.GetAdminPermissionService().Save(model)
 
 	response.Data(c, model)
 }
 
 func (uc *AdminPermissionController) Delete(c *gin.Context) {
-	model := service.NewAdminPermissionService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetAdminPermissionService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewAdminPermissionService(uc.App).Delete(model); res > 0 {
+	if res := uc.App.GetAdminPermissionService().Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

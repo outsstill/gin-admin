@@ -5,7 +5,6 @@ import (
 	"github.com/outsstill/gin-admin/model/adminMenu"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
-	service "github.com/outsstill/gin-admin/services"
 )
 
 type AdminMenuController struct {
@@ -20,7 +19,7 @@ func NewAdminMenuController(base *BaseAPIController) *AdminMenuController {
 
 func (uc *AdminMenuController) Index(c *gin.Context) {
 
-	data, pager := service.NewAdminMenuService(uc.App).Paginate(c, uc.GetPerPage(c))
+	data, pager := uc.App.GetAdminMenuService().Paginate(c, uc.GetPerPage(c))
 
 	response.Data(c, gin.H{
 		"data":  data,
@@ -30,14 +29,14 @@ func (uc *AdminMenuController) Index(c *gin.Context) {
 
 func (uc *AdminMenuController) All(c *gin.Context) {
 
-	menus := service.NewAdminMenuService(uc.App).All()
+	menus := uc.App.GetAdminMenuService().All()
 
 	response.Data(c, menus)
 }
 
 func (uc *AdminMenuController) Get(c *gin.Context) {
 
-	user := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
+	user := uc.App.GetAdminMenuService().Get(c.Param("id"))
 
 	response.Data(c, user)
 }
@@ -45,7 +44,7 @@ func (uc *AdminMenuController) Get(c *gin.Context) {
 func (uc *AdminMenuController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminMenuStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminMenuStore); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminMenuStore); !ok {
 		return
 	}
 
@@ -58,13 +57,13 @@ func (uc *AdminMenuController) Store(c *gin.Context) {
 		ParentId: request.ParentId,
 	}
 
-	service.NewAdminMenuService(uc.App).Create(u)
+	uc.App.GetAdminMenuService().Create(u)
 
 	response.Data(c, u)
 }
 
 func (uc *AdminMenuController) Update(c *gin.Context) {
-	model := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetAdminMenuService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
@@ -73,7 +72,7 @@ func (uc *AdminMenuController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminMenuUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminMenuUpdate); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminMenuUpdate); !ok {
 		return
 	}
 
@@ -84,19 +83,19 @@ func (uc *AdminMenuController) Update(c *gin.Context) {
 	model.Order = request.Order
 	model.ParentId = request.ParentId
 
-	service.NewAdminMenuService(uc.App).Save(model)
+	uc.App.GetAdminMenuService().Save(model)
 
 	response.Data(c, model)
 }
 
 func (uc *AdminMenuController) Delete(c *gin.Context) {
-	model := service.NewAdminMenuService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetAdminMenuService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
 
-	if res := service.NewAdminMenuService(uc.App).Delete(model); res > 0 {
+	if res := uc.App.GetAdminMenuService().Delete(model); res > 0 {
 		response.Success(c)
 		return
 	}

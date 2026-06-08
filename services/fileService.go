@@ -5,13 +5,13 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	fileModel "github.com/outsstill/gin-admin/model/file"
 	"github.com/outsstill/gin-admin/pkg/file"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -19,10 +19,10 @@ import (
 
 type FileService struct {
 	storage file.IStorage
-	app     *core.App
+	DB      *gorm.DB
 }
 
-func NewFileService(app *core.App, drive ...string) *FileService {
+func NewFileService(db *gorm.DB, drive ...string) *FileService {
 
 	fileDrive := global.Config.Storage.Driver
 	if len(drive) > 0 {
@@ -45,7 +45,7 @@ func NewFileService(app *core.App, drive ...string) *FileService {
 	fileStorage := file.NewStorage(fileConfig)
 	return &FileService{
 		storage: fileStorage,
-		app:     app,
+		DB:      db,
 	}
 }
 
@@ -123,32 +123,32 @@ func (service *FileService) DeleteFile(id string) error {
 }
 
 func (service *FileService) Create(model *fileModel.File) {
-	service.app.DB.Create(model)
+	service.DB.Create(model)
 }
 
 func (service *FileService) Save(model *fileModel.File) (rowsAffected int64) {
-	result := service.app.DB.Save(model)
+	result := service.DB.Save(model)
 	return result.RowsAffected
 }
 
 func (service *FileService) Delete(model *fileModel.File) (rowsAffected int64) {
-	result := service.app.DB.Delete(model)
+	result := service.DB.Delete(model)
 	return result.RowsAffected
 }
 
 func (service *FileService) Get(idstr string) (model *fileModel.File) {
-	service.app.DB.Where("id", idstr).First(&model)
+	service.DB.Where("id", idstr).First(&model)
 	return
 }
 
 func (service *FileService) All() (models []fileModel.File) {
-	service.app.DB.Find(&models)
+	service.DB.Find(&models)
 	return
 }
 
 // Paginate 分页内容
 func (service *FileService) Paginate(c *gin.Context, perPage int) (users []fileModel.File, paging paginator.Paging) {
-	db := service.app.DB.Model(fileModel.File{})
+	db := service.DB.Model(fileModel.File{})
 	if c.Query("storage") != "" {
 		db = db.Where("storage = ?", c.Query("storage"))
 	}

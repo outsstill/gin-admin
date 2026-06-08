@@ -29,7 +29,7 @@ func NewAdminFileController(base *BaseAPIController) *AdminFileController {
 
 func (uc *AdminFileController) Index(c *gin.Context) {
 
-	data, pager := service.NewFileService(uc.App).Paginate(c, uc.GetPerPage(c))
+	data, pager := uc.App.GetFileService().Paginate(c, uc.GetPerPage(c))
 
 	response.Data(c, gin.H{
 		"data":  data,
@@ -39,14 +39,14 @@ func (uc *AdminFileController) Index(c *gin.Context) {
 
 func (uc *AdminFileController) All(c *gin.Context) {
 
-	menus := service.NewFileService(uc.App).All()
+	menus := uc.App.GetFileService().All()
 
 	response.Data(c, menus)
 }
 
 func (uc *AdminFileController) Get(c *gin.Context) {
 
-	user := service.NewFileService(uc.App).Get(c.Param("id"))
+	user := uc.App.GetFileService().Get(c.Param("id"))
 
 	response.Data(c, user)
 }
@@ -82,7 +82,7 @@ func (uc *AdminFileController) CheckUploadStorage(storage string) error {
 func (uc *AdminFileController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminFileStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminFileStore); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminFileStore); !ok {
 		return
 	}
 
@@ -104,7 +104,7 @@ func (uc *AdminFileController) Store(c *gin.Context) {
 		LastModified: time.Now(),
 		UserId:       cast.ToUint64(auth.CurrentAdminUID(c)),
 	}
-	service.NewFileService(uc.App).Create(u)
+	uc.App.GetFileService().Create(u)
 
 	response.Data(c, u)
 }
@@ -118,7 +118,7 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 		return
 	}
 
-	obj, err := service.NewFileService(uc.App, uploadStorage).UploadFile(c)
+	obj, err := service.NewFileService(uc.App.DB, uploadStorage).UploadFile(c)
 
 	if err != nil {
 		response.Fail(c, err.Error())
@@ -126,14 +126,14 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 	}
 
 	if obj != nil {
-		service.NewFileService(uc.App).Create(obj)
+		uc.App.GetFileService().Create(obj)
 	}
 
 	response.Data(c, obj)
 }
 
 func (uc *AdminFileController) Update(c *gin.Context) {
-	model := service.NewFileService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetFileService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
@@ -142,7 +142,7 @@ func (uc *AdminFileController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminFileUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App, &request, requests.VerityAdminFileUpdate); !ok {
+	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminFileUpdate); !ok {
 		return
 	}
 
@@ -166,19 +166,20 @@ func (uc *AdminFileController) Update(c *gin.Context) {
 	model.GroupId = request.GroupId
 	model.Type = request.Type
 	model.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
-	service.NewFileService(uc.App).Save(model)
+
+	uc.App.GetFileService().Save(model)
 
 	response.Data(c, model)
 }
 
 func (uc *AdminFileController) Delete(c *gin.Context) {
 
-	model := service.NewFileService(uc.App).Get(c.Param("id"))
+	model := uc.App.GetFileService().Get(c.Param("id"))
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
 		return
 	}
-	err := service.NewFileService(uc.App, model.Storage).DeleteFile(cast.ToString(model.ID))
+	err := service.NewFileService(uc.App.DB, model.Storage).DeleteFile(cast.ToString(model.ID))
 
 	if err != nil {
 		response.Fail(c, err.Error())

@@ -2,13 +2,67 @@ package core
 
 import (
 	"github.com/outsstill/gin-admin/pkg/cache"
+	"github.com/outsstill/gin-admin/pkg/captcha"
 	redisClient "github.com/outsstill/gin-admin/pkg/redis"
+	service "github.com/outsstill/gin-admin/services"
 	"gorm.io/gorm"
 )
 
+type ServiceInterface interface {
+	Name() string
+}
+
+type ServiceRegistrar interface {
+	Register(name string, svc any)
+}
+
 type App struct {
-	Prefix string
-	DB     *gorm.DB
-	Redis  *redisClient.RedisClient
-	Cache  *cache.CacheService
+	Prefix   string
+	DB       *gorm.DB
+	Redis    *redisClient.RedisClient
+	Cache    *cache.CacheService
+	services map[string]any
+}
+
+func (a *App) Register(name string, svc any) {
+	if a.services == nil {
+		a.services = make(map[string]any)
+	}
+	a.services[name] = svc
+}
+
+func (a *App) GetAdminLogService() *service.AdminLogService {
+	return a.services["admin_log"].(*service.AdminLogService)
+}
+
+func (a *App) GetAdminUserService() *service.AdminUserService {
+	return a.services["admin_user"].(*service.AdminUserService)
+}
+
+func (a *App) GetAdminRoleService() *service.AdminRoleService {
+	return a.services["admin_role"].(*service.AdminRoleService)
+}
+
+func (a *App) GetAdminMenuService() *service.AdminMenuService {
+	return a.services["admin_menu"].(*service.AdminMenuService)
+}
+
+func (a *App) GetAdminPermissionService() *service.AdminPermissionService {
+	return a.services["admin_permission"].(*service.AdminPermissionService)
+}
+
+func (a *App) GetConfigService() *service.ConfigService {
+	return a.services["config"].(*service.ConfigService)
+}
+
+func (a *App) GetFileService() *service.FileService {
+	return a.services["file"].(*service.FileService)
+}
+
+func (a *App) GetAuthService() *service.AuthService {
+	return a.services["auth"].(*service.AuthService)
+}
+
+func (a *App) GetCaptchaService() *captcha.Captcha {
+	return a.services["auth"].(*captcha.Captcha)
 }

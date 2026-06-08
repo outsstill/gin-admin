@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/model/adminMenu"
@@ -13,21 +12,22 @@ import (
 	"github.com/outsstill/gin-admin/pkg/paginator"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"gorm.io/gorm"
 )
 
 type AdminRoleService struct {
-	app *core.App
+	DB *gorm.DB
 }
 
-func NewAdminRoleService(app *core.App) *AdminRoleService {
+func NewAdminRoleService(db *gorm.DB) *AdminRoleService {
 	return &AdminRoleService{
-		app: app,
+		DB: db,
 	}
 }
 
 func (service *AdminRoleService) Create(c *gin.Context, request *requests.AdminRoleStoreRequest) {
 
-	tx := service.app.DB.Begin()
+	tx := service.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -74,7 +74,7 @@ func (service *AdminRoleService) Create(c *gin.Context, request *requests.AdminR
 
 func (service *AdminRoleService) Update(c *gin.Context, request *requests.AdminRoleUpdateRequest, userModel *adminRole.AdminRole) {
 
-	tx := service.app.DB.Begin()
+	tx := service.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -140,7 +140,7 @@ func (service *AdminRoleService) Update(c *gin.Context, request *requests.AdminR
 
 func (service *AdminRoleService) UpdateMenus(c *gin.Context, request *requests.AdminRoleUpdateMenusRequest, userModel *adminRole.AdminRole) {
 
-	tx := service.app.DB.Begin()
+	tx := service.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -179,7 +179,7 @@ func (service *AdminRoleService) UpdateMenus(c *gin.Context, request *requests.A
 
 func (service *AdminRoleService) UpdatePermissions(c *gin.Context, request *requests.AdminRoleUpdatePermissionsRequest, userModel *adminRole.AdminRole) {
 
-	tx := service.app.DB.Begin()
+	tx := service.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -220,17 +220,17 @@ func (service *AdminRoleService) UpdatePermissions(c *gin.Context, request *requ
 }
 
 func (service *AdminRoleService) Delete(model *adminRole.AdminRole) (rowsAffected int64) {
-	result := service.app.DB.Delete(model)
+	result := service.DB.Delete(model)
 	return result.RowsAffected
 }
 
 func (service *AdminRoleService) Get(idstr string) (model *adminRole.AdminRole) {
-	service.app.DB.Where("id", idstr).Preload("Menus").Preload("Permissions").First(&model)
+	service.DB.Where("id", idstr).Preload("Menus").Preload("Permissions").First(&model)
 	return
 }
 
 func (service *AdminRoleService) All() (models []adminRole.AdminRole) {
-	service.app.DB.Find(&models)
+	service.DB.Find(&models)
 	return
 }
 
@@ -238,7 +238,7 @@ func (service *AdminRoleService) All() (models []adminRole.AdminRole) {
 func (service *AdminRoleService) Paginate(c *gin.Context, perPage int) (users []adminRole.AdminRole, paging paginator.Paging) {
 	paging = paginator.Paginate(
 		c,
-		service.app.DB.Model(adminRole.AdminRole{}),
+		service.DB.Model(adminRole.AdminRole{}),
 		&users,
 		global.Config.VADMINURL(model.TableName(&adminRole.AdminRole{})),
 		perPage,

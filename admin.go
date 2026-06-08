@@ -12,9 +12,11 @@ import (
 	"github.com/outsstill/gin-admin/global"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
 	"github.com/outsstill/gin-admin/pkg/cache"
+	"github.com/outsstill/gin-admin/pkg/captcha"
 	"github.com/outsstill/gin-admin/pkg/logger"
 	redisClient "github.com/outsstill/gin-admin/pkg/redis"
 	"github.com/outsstill/gin-admin/routes"
+	service "github.com/outsstill/gin-admin/services"
 	"github.com/outsstill/gin-admin/setting"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
@@ -111,6 +113,17 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 		Redis:  rClient,
 		Cache:  cfg.Cache,
 	}
+
+	// 注册 services
+	app.Register("admin_log", service.NewAdminLogService(app.DB))
+	app.Register("admin_user", service.NewAdminUserService(app.DB))
+	app.Register("admin_role", service.NewAdminRoleService(app.DB))
+	app.Register("admin_menu", service.NewAdminMenuService(app.DB))
+	app.Register("admin_permission", service.NewAdminPermissionService(app.DB))
+	app.Register("file", service.NewFileService(app.DB))
+	app.Register("config", service.NewConfigService(app.DB))
+	app.Register("auth", service.NewAuthService(app.DB))
+	app.Register("captcha", captcha.NewCaptcha(app.Redis))
 
 	// 全局变量初始化
 	globalLogger := logger.New(cfg.Logger, cfg.Config)

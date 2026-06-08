@@ -1,8 +1,8 @@
 package requests
 
 import (
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/model"
+	"gorm.io/gorm"
 )
 
 type ConfigModelStoreRequest struct {
@@ -21,7 +21,7 @@ type ConfigModelStoreRequest struct {
 	Placeholder string `json:"placeholder"`
 }
 
-func VerityConfigModelStore(app *core.App, obj interface{}) map[string][]string {
+func VerityConfigModelStore(db *gorm.DB, obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"ConfigLabel": {
@@ -36,7 +36,7 @@ func VerityConfigModelStore(app *core.App, obj interface{}) map[string][]string 
 		},
 	}
 
-	errors := ValidateStruct(app, obj, messages)
+	errors := ValidateStruct(db, obj, messages)
 
 	return errors
 }
@@ -58,7 +58,7 @@ type ConfigModelUpdateRequest struct {
 	Placeholder     string `json:"placeholder"`
 }
 
-func VerityConfigModelUpdate(app *core.App, obj interface{}) map[string][]string {
+func VerityConfigModelUpdate(db *gorm.DB, obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"ConfigKey": {
@@ -72,7 +72,7 @@ func VerityConfigModelUpdate(app *core.App, obj interface{}) map[string][]string
 		},
 	}
 
-	errors := ValidateStruct(app, obj, messages)
+	errors := ValidateStruct(db, obj, messages)
 
 	return errors
 }

@@ -5,13 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/global"
-	"github.com/outsstill/gin-admin/pkg/auth"
-	"github.com/outsstill/gin-admin/pkg/captcha"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/jwt"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
-	service "github.com/outsstill/gin-admin/services"
 )
 
 type AdminAuthController struct {
@@ -27,7 +24,13 @@ func NewAdminAuthController(base *BaseAPIController) *AdminAuthController {
 func (ac *AdminAuthController) Login(c *gin.Context) {
 	// 验证
 	request := requests.AdminLoginRequest{}
-	if ok := requests.ValidateFunc(c, ac.App, &request, requests.VerityAdminLogin); !ok {
+	if ok := requests.ValidateFunc(c, ac.App.DB, &request, requests.VerityAdminLogin); !ok {
+		return
+	}
+
+	// 如果有验证码
+	if ok := ac.App.GetCaptchaService().VerifyCaptcha(request.CaptchaID, request.CaptchaAnswer); !ok {
+		response.Fail(c, "验证码错误")
 		return
 	}
 
@@ -36,7 +39,7 @@ func (ac *AdminAuthController) Login(c *gin.Context) {
 	//	return
 	//}
 
-	userModel, err := auth.NewAuth(ac.App).AttemptAdmin(request.Username, request.Password)
+	userModel, err := ac.App.GetAuthService().AttemptAdmin(request.Username, request.Password)
 
 	if err != nil {
 		// 失败，显示错误提示
@@ -71,7 +74,7 @@ func (ac *AdminAuthController) Logout(c *gin.Context) {
 
 func (ac *AdminAuthController) Current(c *gin.Context) {
 
-	user := auth.NewAuth(ac.App).CurrentAdminUser(c)
+	user := ac.App.GetAuthService().CurrentAdminUser(c)
 
 	response.Data(c, user)
 }
@@ -93,7 +96,7 @@ func (ac *AdminAuthController) RefreshToken(c *gin.Context) {
 // ShowCaptcha 显示图片验证码
 func (ac *AdminAuthController) ShowCaptcha(c *gin.Context) {
 	// 生成验证码
-	id, b64s, answer, err := captcha.NewCaptcha(ac.App).GenerateCaptcha()
+	id, b64s, answer, err := ac.App.GetCaptchaService().GenerateCaptcha()
 
 	if global.Config.IsDebug() {
 		fmt.Printf("获取验证码 id:%s answer:%s\n", id, answer)
@@ -110,11 +113,11 @@ func (ac *AdminAuthController) ShowCaptcha(c *gin.Context) {
 
 func (ac *AdminAuthController) UpdateProfile(c *gin.Context) {
 
-	user := auth.NewAuth(ac.App).CurrentAdminUser(c)
+	user := ac.App.GetAuthService().CurrentAdminUser(c)
 
 	// 验证
 	request := requests.AdminUserProfileUpdateRequest{}
-	if ok := requests.ValidateFunc(c, ac.App, &request, requests.VerityAdminUserProfileUpdate); !ok {
+	if ok := requests.ValidateFunc(c, ac.App.DB, &request, requests.VerityAdminUserProfileUpdate); !ok {
 		return
 	}
 
@@ -122,18 +125,18 @@ func (ac *AdminAuthController) UpdateProfile(c *gin.Context) {
 		user.Name = request.Name
 	}
 
-	service.NewAdminUserService(ac.App).Save(user)
+	ac.App.GetAdminUserService().Save(user)
 
 	response.Data(c, user)
 }
 
 func (ac *AdminAuthController) UpdatePassword(c *gin.Context) {
 
-	user := auth.NewAuth(ac.App).CurrentAdminUser(c)
+	user := ac.App.GetAuthService().CurrentAdminUser(c)
 
 	// 验证
 	request := requests.AdminUserProfilePasswordUpdateRequest{}
-	if ok := requests.ValidateFunc(c, ac.App, &request, requests.VerityAdminUserProfilePasswordUpdate); !ok {
+	if ok := requests.ValidateFunc(c, ac.App.DB, &request, requests.VerityAdminUserProfilePasswordUpdate); !ok {
 		return
 	}
 
@@ -141,7 +144,7 @@ func (ac *AdminAuthController) UpdatePassword(c *gin.Context) {
 		user.Password = request.Password
 	}
 
-	service.NewAdminUserService(ac.App).Save(user)
+	ac.App.GetAdminUserService().Save(user)
 
 	response.Data(c, user)
 }

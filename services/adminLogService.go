@@ -2,50 +2,54 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/model/adminLog"
 	"github.com/outsstill/gin-admin/pkg/paginator"
+	"gorm.io/gorm"
 )
 
 type AdminLogService struct {
-	app *core.App
+	DB *gorm.DB
 }
 
-func NewAdminLogService(app *core.App) *AdminLogService {
+func (service *AdminLogService) Name() string {
+	return "AdminLogService"
+}
+
+func NewAdminLogService(db *gorm.DB) *AdminLogService {
 	return &AdminLogService{
-		app: app,
+		DB: db,
 	}
 }
 
 func (service *AdminLogService) Create(model *adminLog.AdminLog) {
-	service.app.DB.Create(model)
+	service.DB.Create(model)
 }
 
 func (service *AdminLogService) Save(model *adminLog.AdminLog) (rowsAffected int64) {
-	result := service.app.DB.Save(model)
+	result := service.DB.Save(model)
 	return result.RowsAffected
 }
 
 func (service *AdminLogService) Get(idstr string) (model *adminLog.AdminLog) {
-	service.app.DB.Where("id", idstr).Preload("AdminUser").First(&model)
+	service.DB.Where("id", idstr).Preload("AdminUser").First(&model)
 	return
 }
 
 func (service *AdminLogService) Delete(model *adminLog.AdminLog) (rowsAffected int64) {
-	result := service.app.DB.Delete(model)
+	result := service.DB.Delete(model)
 	return result.RowsAffected
 }
 
 func (service *AdminLogService) All() (models []adminLog.AdminLog) {
-	service.app.DB.Find(&models)
+	service.DB.Find(&models)
 	return
 }
 
 // Paginate 分页内容
 func (service *AdminLogService) Paginate(c *gin.Context, perPage int) (data []adminLog.AdminLog, paging paginator.Paging) {
-	db := service.app.DB.Model(adminLog.AdminLog{})
+	db := service.DB.Model(adminLog.AdminLog{})
 
 	if c.Query("path") != "" {
 		db = db.Where("path LIKE ?", c.Query("path")+"%")
