@@ -64,5 +64,5 @@ func (a *App) GetAuthService() *service.AuthService {
 }
 
 func (a *App) GetCaptchaService() *captcha.Captcha {
-	return a.services["auth"].(*captcha.Captcha)
+	return a.services["captcha"].(*captcha.Captcha)
 }
