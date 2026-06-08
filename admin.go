@@ -97,6 +97,10 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 		return nil, errors.New("logger is required")
 	}
 
+	// 全局变量初始化
+	globalLogger := logger.New(cfg.Logger, cfg.Config)
+	global.Init(globalLogger, cfg.Config)
+
 	rClient := redisClient.NewClient(cfg.Redis)
 
 	if len(prefix) == 0 {
@@ -124,10 +128,6 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 	app.Register("config", service.NewConfigService(app.DB))
 	app.Register("auth", service.NewAuthService(app.DB))
 	app.Register("captcha", captcha.NewCaptcha(app.Redis))
-
-	// 全局变量初始化
-	globalLogger := logger.New(cfg.Logger, cfg.Config)
-	global.Init(globalLogger, cfg.Config)
 
 	return app, nil
 }
