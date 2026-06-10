@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/controllers"
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
+	"github.com/outsstill/gin-admin/setting"
 )
 
 // RegisterAdminRoutes 注册 admin 相关路由
@@ -114,8 +114,8 @@ func RegisterStaticRoutes(r *gin.Engine) {
 
 	staticPath := "static"
 
-	if global.Config.Storage.Local.StaticPrefix != "" {
-		staticPath = global.Config.Storage.Local.StaticPrefix
+	if setting.Storage().Local.StaticPrefix != "" {
+		staticPath = setting.Storage().Local.StaticPrefix
 	}
 
 	staticRoute := fmt.Sprintf("/%s", staticPath)

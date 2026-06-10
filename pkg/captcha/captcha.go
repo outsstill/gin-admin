@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/mojocn/base64Captcha"
-	"github.com/outsstill/gin-admin/global"
 	redisClient "github.com/outsstill/gin-admin/pkg/redis"
+	"github.com/outsstill/gin-admin/setting"
 )
 
 type Captcha struct {
@@ -28,16 +28,16 @@ func NewCaptcha(redis *redisClient.RedisClient) *Captcha {
 		// 使用全局 Redis 对象，并配置存储 Key 的前缀
 		store := RedisStore{
 			RedisClient: redis,
-			KeyPrefix:   global.Config.App.Name + ":captcha:",
+			KeyPrefix:   setting.App().Name + ":captcha:",
 		}
 
 		// 配置 base64Captcha 驱动信息
 		driver := base64Captcha.NewDriverDigit(
-			global.Config.Captcha.Height,
-			global.Config.Captcha.Width,
-			global.Config.Captcha.Length,
-			global.Config.Captcha.Maxskew,
-			global.Config.Captcha.Dotcount,
+			setting.Captcha().Height,
+			setting.Captcha().Width,
+			setting.Captcha().Length,
+			setting.Captcha().Maxskew,
+			setting.Captcha().Dotcount,
 		)
 
 		// 实例化 base64Captcha 并赋值给内部使用的 internalCaptcha 对象
@@ -55,7 +55,7 @@ func (c *Captcha) GenerateCaptcha() (id string, b64s, answer string, err error) 
 // VerifyCaptcha 验证验证码是否正确
 func (c *Captcha) VerifyCaptcha(id string, answer string) (match bool) {
 	// 方便本地和 API 自动测试
-	if !global.Config.IsProduction() && id == global.Config.Captcha.TestingKey {
+	if !setting.IsProduction() && id == setting.Captcha().TestingKey {
 		return true
 	}
 

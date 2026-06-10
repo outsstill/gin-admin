@@ -1,11 +1,13 @@
 package setting
 
 import (
+	"errors"
 	"path/filepath"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cast"
+	"github.com/spf13/viper"
 )
 
 type Setting struct {
@@ -16,51 +18,108 @@ type Setting struct {
 	Paging  PagingConfig  `mapstructure:"paging" yaml:"paging"`
 }
 
-func (setting *Setting) IsLocal() bool {
-	return setting.App.Env == "local"
+var cfg *Setting
+
+func Load(path string) (*Setting, error) {
+
+	if len(path) == 0 {
+		return nil, errors.New("config file path is empty")
+	}
+
+	s := &Setting{}
+
+	v := viper.New()
+
+	if len(path) > 0 {
+		v.SetConfigType("yaml") // 类型
+		v.AddConfigPath(".")    // 当前目录
+		v.SetConfigFile(path)
+
+		if err := v.ReadInConfig(); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := v.Unmarshal(s); err != nil {
+		return nil, err
+	}
+
+	cfg = s
+	return s, nil
 }
 
-func (setting *Setting) IsProduction() bool {
-	return setting.App.Env == "production"
+func Get() *Setting {
+	if cfg == nil {
+		panic("config not initialized")
+	}
+	return cfg
 }
 
-func (setting *Setting) IsTesting() bool {
-	return setting.App.Env == "testing"
+func App() AppConfig {
+	return Get().App
 }
 
-func (setting *Setting) IsDebug() bool {
-	return setting.App.Debug == true
+func Storage() StorageConfig {
+	return Get().Storage
+}
+
+func JWT() JWTConfig {
+	return Get().JWT
+}
+
+func Captcha() CaptchaConfig {
+	return Get().Captcha
+}
+
+func Paging() PagingConfig {
+	return Get().Paging
+}
+
+func IsLocal() bool {
+	return App().Env == "local"
+}
+
+func IsProduction() bool {
+	return App().Env == "production"
+}
+
+func IsTesting() bool {
+	return App().Env == "testing"
+}
+
+func IsDebug() bool {
+	return App().Debug == true
 }
 
 // TimenowInTimezone 获取当前时间，支持时区
-func (setting *Setting) TimenowInTimezone() time.Time {
-	chinaTimezone, _ := time.LoadLocation(setting.App.Timezone)
+func TimenowInTimezone() time.Time {
+	chinaTimezone, _ := time.LoadLocation(App().Timezone)
 	return time.Now().In(chinaTimezone)
 }
 
 // URL 传参 path 拼接站点的 URL
-func (setting *Setting) URL(path string) string {
-	return setting.App.Url + "/" + path
+func URL(path string) string {
+	return App().Url + "/" + path
 }
 
 // VADMINURL 拼接带 admin 标示 URL
-func (setting *Setting) VADMINURL(path string) string {
-	return setting.URL("/admin/" + path)
+func VADMINURL(path string) string {
+	return URL("/admin/" + path)
 }
 
 // V1URL 拼接带 v1 标示 URL
-func (setting *Setting) V1URL(path string) string {
-	return setting.URL("/v1/" + path)
+func V1URL(path string) string {
+	return URL("/v1/" + path)
 }
 
-func (setting *Setting) GetFileStoragePath() string {
+func GetFileStoragePath() string {
 	formatted := time.Now().Format("20060102")
 
-	return setting.App.Name + "/" + formatted
+	return App().Name + "/" + formatted
 }
 
 // 获取文件存储名称(包含完整路径)
-func (setting *Setting) GetFileStorageFullPath(fileName string, isOriginName bool) (string, string) {
+func GetFileStorageFullPath(fileName string, isOriginName bool) (string, string) {
 	originFileName := fileName
 	if !isOriginName {
 		fileOriExt := filepath.Ext(fileName) // 获取文件扩展名 这里包含了 .
@@ -70,7 +129,7 @@ func (setting *Setting) GetFileStorageFullPath(fileName string, isOriginName boo
 		originFileName = cast.ToString(randomNumber) + fileOriExt
 	}
 
-	objectName := setting.GetFileStoragePath() + "/" + originFileName
+	objectName := GetFileStoragePath() + "/" + originFileName
 
 	return objectName, originFileName
 }

@@ -2,10 +2,9 @@ package redis
 
 import (
 	"context"
-	"sync"
 	"time"
 
-	"github.com/outsstill/gin-admin/global"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -14,8 +13,8 @@ type RedisClient struct {
 	Context context.Context
 }
 
-var once sync.Once
-var Redis *RedisClient
+//var once sync.Once
+//var Redis *RedisClient
 
 func NewClient(redis *redis.Client) *RedisClient {
 
@@ -66,7 +65,7 @@ func (rds *RedisClient) Ping() error {
 // Set 存储 key 对应的 value，且设置 expiration 过期时间
 func (rds RedisClient) Set(key string, value interface{}, expiration time.Duration) bool {
 	if err := rds.Client.Set(rds.Context, key, value, expiration).Err(); err != nil {
-		global.Logger.ErrorString("Redis", "Set", err.Error())
+		logger.ErrorString("Redis", "Set", err.Error())
 		return false
 	}
 	return true
@@ -77,7 +76,7 @@ func (rds RedisClient) Get(key string) string {
 	result, err := rds.Client.Get(rds.Context, key).Result()
 	if err != nil {
 		if err != redis.Nil {
-			global.Logger.ErrorString("Redis", "Get", err.Error())
+			logger.ErrorString("Redis", "Get", err.Error())
 		}
 		return ""
 	}
@@ -89,7 +88,7 @@ func (rds RedisClient) Has(key string) bool {
 	_, err := rds.Client.Get(rds.Context, key).Result()
 	if err != nil {
 		if err != redis.Nil {
-			global.Logger.ErrorString("Redis", "Has", err.Error())
+			logger.ErrorString("Redis", "Has", err.Error())
 		}
 		return false
 	}
@@ -99,7 +98,7 @@ func (rds RedisClient) Has(key string) bool {
 // Del 删除存储在 redis 里的数据，支持多个 key 传参
 func (rds RedisClient) Del(keys ...string) bool {
 	if err := rds.Client.Del(rds.Context, keys...).Err(); err != nil {
-		global.Logger.ErrorString("Redis", "Del", err.Error())
+		logger.ErrorString("Redis", "Del", err.Error())
 		return false
 	}
 	return true
@@ -108,7 +107,7 @@ func (rds RedisClient) Del(keys ...string) bool {
 // FlushDB 清空当前 redis db 里的所有数据
 func (rds RedisClient) FlushDB() bool {
 	if err := rds.Client.FlushDB(rds.Context).Err(); err != nil {
-		global.Logger.ErrorString("Redis", "FlushDB", err.Error())
+		logger.ErrorString("Redis", "FlushDB", err.Error())
 		return false
 	}
 	return true
@@ -121,18 +120,18 @@ func (rds RedisClient) Increment(parameters ...interface{}) bool {
 	case 1:
 		key := parameters[0].(string)
 		if err := rds.Client.Incr(rds.Context, key).Err(); err != nil {
-			global.Logger.ErrorString("Redis", "Increment", err.Error())
+			logger.ErrorString("Redis", "Increment", err.Error())
 			return false
 		}
 	case 2:
 		key := parameters[0].(string)
 		value := parameters[1].(int64)
 		if err := rds.Client.IncrBy(rds.Context, key, value).Err(); err != nil {
-			global.Logger.ErrorString("Redis", "Increment", err.Error())
+			logger.ErrorString("Redis", "Increment", err.Error())
 			return false
 		}
 	default:
-		global.Logger.ErrorString("Redis", "Increment", "参数过多")
+		logger.ErrorString("Redis", "Increment", "参数过多")
 		return false
 	}
 	return true
@@ -145,18 +144,18 @@ func (rds RedisClient) Decrement(parameters ...interface{}) bool {
 	case 1:
 		key := parameters[0].(string)
 		if err := rds.Client.Decr(rds.Context, key).Err(); err != nil {
-			global.Logger.ErrorString("Redis", "Decrement", err.Error())
+			logger.ErrorString("Redis", "Decrement", err.Error())
 			return false
 		}
 	case 2:
 		key := parameters[0].(string)
 		value := parameters[1].(int64)
 		if err := rds.Client.DecrBy(rds.Context, key, value).Err(); err != nil {
-			global.Logger.ErrorString("Redis", "Decrement", err.Error())
+			logger.ErrorString("Redis", "Decrement", err.Error())
 			return false
 		}
 	default:
-		global.Logger.ErrorString("Redis", "Decrement", "参数过多")
+		logger.ErrorString("Redis", "Decrement", "参数过多")
 		return false
 	}
 	return true

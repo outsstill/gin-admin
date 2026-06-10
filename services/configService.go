@@ -2,10 +2,10 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	configModel "github.com/outsstill/gin-admin/model/config"
 	"github.com/outsstill/gin-admin/pkg/paginator"
+	"github.com/outsstill/gin-admin/setting"
 	"gorm.io/gorm"
 )
 
@@ -65,7 +65,7 @@ func (service *ConfigService) Paginate(c *gin.Context, perPage int) (users []con
 		c,
 		db,
 		&users,
-		global.Config.VADMINURL(model.TableName(&configModel.Config{})),
+		setting.VADMINURL(model.TableName(&configModel.Config{})),
 		perPage,
 	)
 	return

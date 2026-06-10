@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/jwt"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/gin-admin/setting"
 )
 
 type AdminAuthController struct {
@@ -98,12 +99,12 @@ func (ac *AdminAuthController) ShowCaptcha(c *gin.Context) {
 	// 生成验证码
 	id, b64s, answer, err := ac.App.GetCaptchaService().GenerateCaptcha()
 
-	if global.Config.IsDebug() {
+	if setting.IsDebug() {
 		fmt.Printf("获取验证码 id:%s answer:%s\n", id, answer)
 	}
 
 	// 记录错误日志，因为验证码是用户的入口，出错时应该记 error 等级的日志
-	global.Logger.LogIf(err)
+	logger.LogIf(err)
 	// 返回给用户
 	response.Data(c, gin.H{
 		"captcha_id":    id,

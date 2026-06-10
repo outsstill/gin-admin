@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
+	"github.com/outsstill/gin-admin/setting"
 	"github.com/spf13/cast"
 )
 
@@ -13,13 +13,13 @@ type BaseAPIController struct {
 }
 
 func (base *BaseAPIController) GetPerPage(c *gin.Context) int {
-	key := global.Config.Paging.UrlQueryPerPage
+	key := setting.Paging().UrlQueryPerPage
 
 	if len(key) == 0 {
 		key = "per_page"
 	}
 
-	defaultPerPage := global.Config.Paging.PerPage
+	defaultPerPage := setting.Paging().PerPage
 
 	if defaultPerPage <= 0 {
 		defaultPerPage = 10

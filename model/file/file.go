@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/pkg/helpers"
+	"github.com/outsstill/gin-admin/setting"
 	"gorm.io/gorm"
 )
 
@@ -49,11 +49,11 @@ func (model *File) GetFileFullUrl() string {
 		storageDrive := model.Storage
 		url = ""
 		if storageDrive == "local" {
-			path := strings.ReplaceAll(model.Path, global.Config.Storage.Local.Path, global.Config.Storage.Local.StaticPrefix)
-			url = global.Config.Storage.Local.Domain
+			path := strings.ReplaceAll(model.Path, setting.Storage().Local.Path, setting.Storage().Local.StaticPrefix)
+			url = setting.Storage().Local.Domain
 			url = url + "/" + path
 		} else if storageDrive == "oss" {
-			url = global.Config.Storage.Oss.Domain
+			url = setting.Storage().Oss.Domain
 			url = url + "/" + model.Path
 		}
 	}
@@ -63,7 +63,7 @@ func (model *File) GetFileFullUrl() string {
 func (model *File) GetFileFullPath() string {
 	path := model.Path
 	if model.Storage == "local" {
-		path = global.Config.Storage.Local.Path + "/" + path
+		path = setting.Storage().Local.Path + "/" + path
 	} else {
 		path = model.Path
 	}

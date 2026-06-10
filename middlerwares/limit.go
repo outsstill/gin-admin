@@ -4,9 +4,10 @@ import (
 	"net/http"
 
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/limiter"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/outsstill/gin-admin/pkg/response"
+	"github.com/outsstill/gin-admin/setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -20,7 +21,7 @@ import (
 // * 1000 reqs/hour: "1000-H"
 // * 2000 reqs/day: "2000-D"
 func LimitIP(app *core.App, limit string) gin.HandlerFunc {
-	if global.Config.IsTesting() {
+	if setting.IsTesting() {
 		limit = "1000000-H"
 	}
 
@@ -38,7 +39,7 @@ func LimitIP(app *core.App, limit string) gin.HandlerFunc {
 
 // LimitPerRoute 限流中间件，用在单独的路由中
 func LimitPerRoute(app *core.App, limit string) gin.HandlerFunc {
-	if global.Config.IsTesting() {
+	if setting.IsTesting() {
 		limit = "1000000-H"
 	}
 
@@ -65,7 +66,7 @@ func limitHandler(c *gin.Context, app *core.App, key string, limit string) bool 
 	// 获取超额的情况
 	rate, err := limiterObj.CheckRate(c, key, limit)
 	if err != nil {
-		global.Logger.LogIf(err)
+		logger.LogIf(err)
 		response.Abort500(c)
 		return false
 	}

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/helpers"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
 )
@@ -67,12 +67,12 @@ func Logger() gin.HandlerFunc {
 
 		if responStatus > 400 && responStatus <= 499 {
 			// 除了 StatusBadRequest 以外，warning 提示一下，常见的有 403 404，开发时都要注意
-			global.Logger.Warn("HTTP Warning "+cast.ToString(responStatus), logFields...)
+			logger.Warn("HTTP Warning "+cast.ToString(responStatus), logFields...)
 		} else if responStatus >= 500 && responStatus <= 599 {
 			// 除了内部错误，记录 error
-			global.Logger.Error("HTTP Error "+cast.ToString(responStatus), logFields...)
+			logger.Error("HTTP Error "+cast.ToString(responStatus), logFields...)
 		} else {
-			global.Logger.Debug("HTTP Access Log", logFields...)
+			logger.Debug("HTTP Access Log", logFields...)
 		}
 	}
 }

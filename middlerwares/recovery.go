@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/global"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"go.uber.org/zap"
 )
@@ -35,7 +35,7 @@ func Recovery2() gin.HandlerFunc {
 				}
 				// 链接中断的情况
 				if brokenPipe {
-					global.Logger.Error(c.Request.URL.Path,
+					logger.Error(c.Request.URL.Path,
 						zap.Time("time", time.Now()),
 						zap.Any("error", err),
 						zap.String("request", string(httpRequest)),
@@ -47,7 +47,7 @@ func Recovery2() gin.HandlerFunc {
 				}
 
 				// 如果不是链接中断，就开始记录堆栈信息
-				global.Logger.Error("recovery from panic",
+				logger.Error("recovery from panic",
 					zap.Time("time", time.Now()),               // 记录时间
 					zap.Any("error", err),                      // 记录错误信息
 					zap.String("request", string(httpRequest)), // 请求信息

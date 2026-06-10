@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/model/adminMenu"
 	"github.com/outsstill/gin-admin/model/adminPermission"
@@ -14,6 +13,7 @@ import (
 	"github.com/outsstill/gin-admin/pkg/paginator"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/gin-admin/setting"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
 )
@@ -205,7 +205,7 @@ func (service *AdminUserService) Paginate(c *gin.Context, perPage int) (users []
 		c,
 		service.DB.Model(adminUser.AdminUser{}),
 		&users,
-		global.Config.VADMINURL(model.TableName(&adminUser.AdminUser{})),
+		setting.VADMINURL(model.TableName(&adminUser.AdminUser{})),
 		perPage,
 	)
 	return

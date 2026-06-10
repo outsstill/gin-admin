@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
-	"github.com/outsstill/gin-admin/pkg/redis"
+	"github.com/outsstill/gin-admin/pkg/logger"
+	"github.com/outsstill/gin-admin/setting"
 
 	"github.com/gin-gonic/gin"
 	limiterlib "github.com/ulule/limiter/v3"
@@ -40,17 +40,17 @@ func (l *Limiter) CheckRate(c *gin.Context, key string, formatted string) (limit
 	var context limiterlib.Context
 	rate, err := limiterlib.NewRateFromFormatted(formatted)
 	if err != nil {
-		global.Logger.LogIf(err)
+		logger.LogIf(err)
 		return context, err
 	}
 
 	// 初始化存储，使用我们程序里共用的 redis.Redis 对象
-	store, err := sredis.NewStoreWithOptions(redis.Redis.Client, limiterlib.StoreOptions{
+	store, err := sredis.NewStoreWithOptions(l.App.Redis.Client, limiterlib.StoreOptions{
 		// 为 limiter 设置前缀，保持 redis 里数据的整洁
-		Prefix: global.Config.App.Name + ":limiter",
+		Prefix: setting.App().Name + ":limiter",
 	})
 	if err != nil {
-		global.Logger.LogIf(err)
+		logger.LogIf(err)
 		return context, err
 	}
 

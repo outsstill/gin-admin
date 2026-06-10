@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/global"
+	"github.com/outsstill/gin-admin/pkg/logger"
 )
 
 func Success(c *gin.Context, msg ...string) {
@@ -82,7 +82,7 @@ func Abort500(c *gin.Context, msg ...string) {
 // BadRequest 响应 400，传参 err 对象，未传参 msg 时使用默认消息
 // 在解析用户请求，请求的格式或者方法不符合预期时调用
 func BadRequest(c *gin.Context, err error, msg ...string) {
-	global.Logger.LogIf(err)
+	logger.LogIf(err)
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{
 		"code":    http.StatusInternalServerError,
 		"message": defaultMessage("请求解析错误，请确认请求格式是否正确。上传文件请使用 multipart 标头，参数请使用 JSON 格式。", msg...),

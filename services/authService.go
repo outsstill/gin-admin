@@ -3,8 +3,8 @@ package service
 import (
 	"errors"
 
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model/adminUser"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"gorm.io/gorm"
 
 	"github.com/spf13/cast"
@@ -43,7 +43,7 @@ func (service *AuthService) CurrentAdminUser(c *gin.Context) *adminUser.AdminUse
 	model := userService.Get(cast.ToString(c.MustGet("current_admin_user_id")))
 
 	if model.ID <= 0 {
-		global.Logger.LogIf(errors.New("无法获取用户"))
+		logger.LogIf(errors.New("无法获取用户"))
 		//response.Fail(c, "没有找到")
 		return &adminUser.AdminUser{}
 	}
@@ -53,7 +53,7 @@ func (service *AuthService) CurrentAdminUser(c *gin.Context) *adminUser.AdminUse
 		menus, errs := userService.GetUserMenus(model.ID)
 
 		if errs != nil {
-			global.Logger.LogIf(errs)
+			logger.LogIf(errs)
 
 			return model
 		}

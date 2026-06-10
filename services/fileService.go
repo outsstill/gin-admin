@@ -5,12 +5,12 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model"
 	fileModel "github.com/outsstill/gin-admin/model/file"
 	"github.com/outsstill/gin-admin/pkg/file"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
+	"github.com/outsstill/gin-admin/setting"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +24,7 @@ type FileService struct {
 
 func NewFileService(db *gorm.DB, drive ...string) *FileService {
 
-	fileDrive := global.Config.Storage.Driver
+	fileDrive := setting.Storage().Driver
 	if len(drive) > 0 {
 		fileDrive = drive[0]
 	}
@@ -32,14 +32,14 @@ func NewFileService(db *gorm.DB, drive ...string) *FileService {
 	fileConfig := file.Config{
 		Driver: fileDrive,
 		LocalConfig: file.LocalConfig{
-			BasePath:      global.Config.Storage.Local.Path,
-			PublicBaseURL: global.Config.Storage.Local.Domain,
+			BasePath:      setting.Storage().Local.Path,
+			PublicBaseURL: setting.Storage().Local.Domain,
 		},
 		OssConfig: file.OssConfig{
-			Region:     global.Config.Storage.Oss.Region,
-			BucketName: global.Config.Storage.Oss.Bucket,
-			Key:        global.Config.Storage.Oss.KeyId,
-			Secret:     global.Config.Storage.Oss.KeySecret,
+			Region:     setting.Storage().Oss.Region,
+			BucketName: setting.Storage().Oss.Bucket,
+			Key:        setting.Storage().Oss.KeyId,
+			Secret:     setting.Storage().Oss.KeySecret,
 		},
 	}
 	fileStorage := file.NewStorage(fileConfig)
@@ -58,12 +58,12 @@ func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) 
 	defer fileObj.Close()
 
 	// 验证大小
-	if header.Size > cast.ToInt64(global.Config.Storage.SizeLimit) {
+	if header.Size > cast.ToInt64(setting.Storage().SizeLimit) {
 		return nil, errors.New("超过最大文件大小")
 	}
 
 	// 验证后缀
-	extLimit := cast.ToStringSlice(global.Config.Storage.Ext)
+	extLimit := cast.ToStringSlice(setting.Storage().Ext)
 	if helpers.FindElement(extLimit, strings.ToLower(helpers.GetFileExt(header.Filename))) < 0 {
 		return nil, errors.New("文件格式不允许 只允许[ " + strings.Join(extLimit, " ") + " ]")
 	}
@@ -157,7 +157,7 @@ func (service *FileService) Paginate(c *gin.Context, perPage int) (users []fileM
 		c,
 		db,
 		&users,
-		global.Config.VADMINURL(model.TableName(&fileModel.File{})),
+		setting.VADMINURL(model.TableName(&fileModel.File{})),
 		perPage,
 	)
 	return

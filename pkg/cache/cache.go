@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/outsstill/gin-admin/global"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/spf13/cast"
 )
 
@@ -26,7 +26,7 @@ func InitWithCacheStore(store Store) {
 
 func Set(key string, obj interface{}, expireTime time.Duration) {
 	b, err := json.Marshal(&obj)
-	global.Logger.LogIf(err)
+	logger.LogIf(err)
 	Cache.Store.Set(key, string(b), expireTime)
 }
 
@@ -34,7 +34,7 @@ func Get(key string) interface{} {
 	stringValue := Cache.Store.Get(key)
 	var wanted interface{}
 	err := json.Unmarshal([]byte(stringValue), &wanted)
-	global.Logger.LogIf(err)
+	logger.LogIf(err)
 	return wanted
 }
 
@@ -50,7 +50,7 @@ func GetObject(key string, wanted interface{}) {
 	val := Cache.Store.Get(key)
 	if len(val) > 0 {
 		err := json.Unmarshal([]byte(val), &wanted)
-		global.Logger.LogIf(err)
+		logger.LogIf(err)
 	}
 }
 

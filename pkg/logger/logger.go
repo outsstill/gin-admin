@@ -3,28 +3,21 @@ package logger
 
 import (
 	"encoding/json"
-	"strings"
-	"time"
 
-	"github.com/outsstill/gin-admin/setting"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 // Logger 全局 Logger 对象
 //var Logger *zap.Logger
 
+var l *Logger
+
 type Logger struct {
 	*zap.Logger
-	Config *setting.Setting
 }
 
-func New(z *zap.Logger, config *setting.Setting) *Logger {
-	return &Logger{
-		Logger: z,
-		Config: config,
-	}
+func Init(z *zap.Logger) {
+	l = &Logger{Logger: z}
 }
 
 // InitLogger 日志初始化
@@ -55,7 +48,7 @@ func New(z *zap.Logger, config *setting.Setting) *Logger {
 //}
 
 // getEncoder 设置日志存储格式
-//func (l *Logger) getEncoder() zapcore.Encoder {
+//func getEncoder() zapcore.Encoder {
 //
 //	// 日志格式规则
 //	encoderConfig := zapcore.EncoderConfig{
@@ -86,45 +79,45 @@ func New(z *zap.Logger, config *setting.Setting) *Logger {
 //}
 
 // customTimeEncoder 自定义友好的时间格式
-func customTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("2006-01-02 15:04:05"))
-}
-
-// getLogWriter 日志记录介质。Gohub 中使用了两种介质，os.Stdout 和文件
-func getLogWriter(filename string, maxSize, maxBackup, maxAge int, compress bool, logType string) zapcore.WriteSyncer {
-
-	// 如果配置了按照日期记录日志文件
-	if logType == "daily" {
-		logname := time.Now().Format("2006-01-02.log")
-		filename = strings.ReplaceAll(filename, "logs.log", logname)
-	}
-
-	// 滚动日志，详见 setting/log.go
-	lumberJackLogger := &lumberjack.Logger{
-		Filename:   filename,
-		MaxSize:    maxSize,
-		MaxBackups: maxBackup,
-		MaxAge:     maxAge,
-		Compress:   compress,
-	}
-	// TODO 配置输出介质
-	//if internal.Logger.IsDebug() {
-	//	// 本地开发终端打印和记录文件
-	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
-	//} else
-	{
-		// 生产环境只记录文件
-		return zapcore.AddSync(lumberJackLogger)
-	}
-}
+//func customTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+//	enc.AppendString(t.Format("2006-01-02 15:04:05"))
+//}
+//
+//// getLogWriter 日志记录介质。Gohub 中使用了两种介质，os.Stdout 和文件
+//func getLogWriter(filename string, maxSize, maxBackup, maxAge int, compress bool, logType string) zapcore.WriteSyncer {
+//
+//	// 如果配置了按照日期记录日志文件
+//	if logType == "daily" {
+//		logname := time.Now().Format("2006-01-02.log")
+//		filename = strings.ReplaceAll(filename, "logs.log", logname)
+//	}
+//
+//	// 滚动日志，详见 setting/log.go
+//	lumberJackLogger := &lumberjack.Logger{
+//		Filename:   filename,
+//		MaxSize:    maxSize,
+//		MaxBackups: maxBackup,
+//		MaxAge:     maxAge,
+//		Compress:   compress,
+//	}
+//	// TODO 配置输出介质
+//	//if internal.Logger.IsDebug() {
+//	//	// 本地开发终端打印和记录文件
+//	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
+//	//} else
+//	{
+//		// 生产环境只记录文件
+//		return zapcore.AddSync(lumberJackLogger)
+//	}
+//}
 
 // Dump 调试专用，不会中断程序，会在终端打印出 warning 消息。
 // 第一个参数会使用 json.Marshal 进行渲染，第二个参数消息（可选）
 //
 //	logger.Dump(adminUser.User{Name:"test"})
 //	logger.Dump(adminUser.User{Name:"test"}, "用户信息")
-func (l *Logger) Dump(value interface{}, msg ...string) {
-	valueString := l.jsonString(value)
+func Dump(value interface{}, msg ...string) {
+	valueString := jsonString(value)
 	// 判断第二个参数是否传参 msg
 	if len(msg) > 0 {
 		l.Logger.Warn("Dump", zap.String(msg[0], valueString))
@@ -134,21 +127,21 @@ func (l *Logger) Dump(value interface{}, msg ...string) {
 }
 
 // LogIf 当 err != nil 时记录 error 等级的日志
-func (l *Logger) LogIf(err error) {
+func LogIf(err error) {
 	if err != nil {
 		l.Logger.Error("Error Occurred:", zap.Error(err))
 	}
 }
 
 // LogWarnIf 当 err != nil 时记录 warning 等级的日志
-func (l *Logger) LogWarnIf(err error) {
+func LogWarnIf(err error) {
 	if err != nil {
 		l.Logger.Warn("Error Occurred:", zap.Error(err))
 	}
 }
 
 // LogInfoIf 当 err != nil 时记录 info 等级的日志
-func (l *Logger) LogInfoIf(err error) {
+func LogInfoIf(err error) {
 	if err != nil {
 		l.Logger.Info("Error Occurred:", zap.Error(err))
 	}
@@ -158,77 +151,77 @@ func (l *Logger) LogInfoIf(err error) {
 // 调用示例：
 //
 //	logger.Debug("Database", zap.String("sql", sql))
-func (l *Logger) Debug(moduleName string, fields ...zap.Field) {
+func Debug(moduleName string, fields ...zap.Field) {
 	l.Logger.Debug(moduleName, fields...)
 }
 
 // Info 告知类日志
-func (l *Logger) Info(moduleName string, fields ...zap.Field) {
+func Info(moduleName string, fields ...zap.Field) {
 	l.Logger.Info(moduleName, fields...)
 }
 
 // Warn 警告类
-func (l *Logger) Warn(moduleName string, fields ...zap.Field) {
+func Warn(moduleName string, fields ...zap.Field) {
 	l.Logger.Warn(moduleName, fields...)
 }
 
 // Error 错误时记录，不应该中断程序，查看日志时重点关注
-func (l *Logger) Error(moduleName string, fields ...zap.Field) {
+func Error(moduleName string, fields ...zap.Field) {
 	l.Logger.Error(moduleName, fields...)
 }
 
 // Fatal 级别同 Error(), 写完 log 后调用 os.Exit(1) 退出程序
-func (l *Logger) Fatal(moduleName string, fields ...zap.Field) {
+func Fatal(moduleName string, fields ...zap.Field) {
 	l.Logger.Fatal(moduleName, fields...)
 }
 
 // DebugString 记录一条字符串类型的 debug 日志，调用示例：
 //
 //	logger.DebugString("SMS", "短信内容", string(result.RawResponse))
-func (l *Logger) DebugString(moduleName, name, msg string) {
+func DebugString(moduleName, name, msg string) {
 	l.Logger.Debug(moduleName, zap.String(name, msg))
 }
 
-func (l *Logger) InfoString(moduleName, name, msg string) {
+func InfoString(moduleName, name, msg string) {
 	l.Logger.Info(moduleName, zap.String(name, msg))
 }
 
-func (l *Logger) WarnString(moduleName, name, msg string) {
+func WarnString(moduleName, name, msg string) {
 	l.Logger.Warn(moduleName, zap.String(name, msg))
 }
 
-func (l *Logger) ErrorString(moduleName, name, msg string) {
+func ErrorString(moduleName, name, msg string) {
 	l.Logger.Error(moduleName, zap.String(name, msg))
 }
 
-func (l *Logger) FatalString(moduleName, name, msg string) {
+func FatalString(moduleName, name, msg string) {
 	l.Logger.Fatal(moduleName, zap.String(name, msg))
 }
 
 // DebugJSON 记录对象类型的 debug 日志，使用 json.Marshal 进行编码。调用示例：
 //
 //	logger.DebugJSON("Auth", "读取登录用户", auth.CurrentUser())
-func (l *Logger) DebugJSON(moduleName, name string, value interface{}) {
-	l.Logger.Debug(moduleName, zap.String(name, l.jsonString(value)))
+func DebugJSON(moduleName, name string, value interface{}) {
+	l.Logger.Debug(moduleName, zap.String(name, jsonString(value)))
 }
 
-func (l *Logger) InfoJSON(moduleName, name string, value interface{}) {
-	l.Logger.Info(moduleName, zap.String(name, l.jsonString(value)))
+func InfoJSON(moduleName, name string, value interface{}) {
+	l.Logger.Info(moduleName, zap.String(name, jsonString(value)))
 }
 
-func (l *Logger) WarnJSON(moduleName, name string, value interface{}) {
-	l.Logger.Warn(moduleName, zap.String(name, l.jsonString(value)))
+func WarnJSON(moduleName, name string, value interface{}) {
+	l.Logger.Warn(moduleName, zap.String(name, jsonString(value)))
 }
 
-func (l *Logger) ErrorJSON(moduleName, name string, value interface{}) {
-	l.Logger.Error(moduleName, zap.String(name, l.jsonString(value)))
+func ErrorJSON(moduleName, name string, value interface{}) {
+	l.Logger.Error(moduleName, zap.String(name, jsonString(value)))
 }
 
-func (l *Logger) FatalJSON(moduleName, name string, value interface{}) {
-	l.Logger.Fatal(moduleName, zap.String(name, l.jsonString(value)))
+func FatalJSON(moduleName, name string, value interface{}) {
+	l.Logger.Fatal(moduleName, zap.String(name, jsonString(value)))
 }
 
-func (l *Logger) jsonString(value interface{}) string {
+func jsonString(value interface{}) string {
 	b, err := json.Marshal(value)
 	if err != nil {
 		l.Logger.Error("Logger", zap.String("JSON marshal error", err.Error()))

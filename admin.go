@@ -9,7 +9,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
 	"github.com/outsstill/gin-admin/pkg/cache"
 	"github.com/outsstill/gin-admin/pkg/captcha"
@@ -19,7 +18,6 @@ import (
 	service "github.com/outsstill/gin-admin/services"
 	"github.com/outsstill/gin-admin/setting"
 	"github.com/redis/go-redis/v9"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -62,10 +60,6 @@ func NewApp(prefix string, opts ...Option) (*core.App, error) {
 		Cache:  cfg.Cache,
 	}
 
-	// 全局变量初始化
-	globalLogger := logger.New(cfg.Logger, cfg.Config)
-	global.Init(globalLogger, cfg.Config)
-
 	return app, nil
 }
 func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core.App, error) {
@@ -73,10 +67,10 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 	cfg, err := loadConfig(filepath)
 
 	if err != nil {
-		return nil, errors.New("配置文件错误")
+		return nil, err
 	}
 
-	if cfg.Config == nil {
+	if cfg == nil {
 		return nil, errors.New("config is nil")
 	}
 
@@ -85,6 +79,12 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 		opt(cfg)
 	}
 
+	if cfg.Logger == nil {
+		return nil, errors.New("logger is required")
+	}
+
+	logger.Init(cfg.Logger)
+
 	if cfg.DB == nil {
 		return nil, errors.New("db is required")
 	}
@@ -92,14 +92,6 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 	if cfg.Redis == nil {
 		return nil, errors.New("redis is required")
 	}
-
-	if cfg.Logger == nil {
-		return nil, errors.New("logger is required")
-	}
-
-	// 全局变量初始化
-	globalLogger := logger.New(cfg.Logger, cfg.Config)
-	global.Init(globalLogger, cfg.Config)
 
 	rClient := redisClient.NewClient(cfg.Redis)
 
@@ -218,24 +210,18 @@ type InitConfig struct {
 type Option func(config *InitConfig)
 
 func loadConfig(path string) (*InitConfig, error) {
-	v := viper.New()
 
-	if len(path) > 0 {
-		v.SetConfigType("yaml") // 类型
-		v.AddConfigPath(".")    // 当前目录
-		v.SetConfigFile(path)
+	cfg := &InitConfig{}
 
-		if err := v.ReadInConfig(); err != nil {
-			return nil, err
-		}
-	}
+	set, err := setting.Load(path)
 
-	cfg := InitConfig{}
-	if err := v.Unmarshal(&cfg.Config); err != nil {
+	if err != nil {
 		return nil, err
 	}
 
-	return &cfg, nil
+	cfg.Config = set
+
+	return cfg, nil
 }
 
 func WithConfig(setting *setting.Setting) Option {

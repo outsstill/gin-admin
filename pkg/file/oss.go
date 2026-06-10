@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/pkg/helpers"
+	"github.com/outsstill/gin-admin/setting"
 
 	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss"
 	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss/credentials"
@@ -50,7 +50,7 @@ func (l *OssStorage) Put(ctx context.Context, in PutObjectInput) (ObjectInfo, er
 	// 从请求中获取文件
 	fileName := in.File.Filename
 	fileSize := in.File.Size
-	objectName, nowFileName := global.Config.GetFileStorageFullPath(fileName, false)
+	objectName, nowFileName := setting.GetFileStorageFullPath(fileName, false)
 
 	_, err := l.ossClient.PutObject(ctx, &oss.PutObjectRequest{
 		Bucket: oss.Ptr(l.cfg.BucketName),

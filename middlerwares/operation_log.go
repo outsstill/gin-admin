@@ -8,9 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/global"
 	"github.com/outsstill/gin-admin/model/adminLog"
 	"github.com/outsstill/gin-admin/pkg/auth"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/spf13/cast"
 )
 
@@ -58,7 +58,7 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 				defer func() {
 					if r := recover(); r != nil {
 						data, _ := json.Marshal(adminLog)
-						global.Logger.ErrorString("OperationLog", "记录失败", string(data))
+						logger.ErrorString("OperationLog", "记录失败", string(data))
 					}
 				}()
 				app.GetAdminLogService().Create(adminLog)
