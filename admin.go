@@ -174,8 +174,8 @@ func registerGlobalMiddleWare(router *gin.Engine) {
 			AllowAllOrigins: true,
 			//AllowOrigins:     []string{"http://localhost:4000"}, // 改成你的前端地址
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-			ExposeHeaders:    []string{"Content-Length"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "access-token", "x-access-token"},
+			ExposeHeaders:    []string{"Content-Length", "Authorization"},
 			AllowCredentials: false,
 			MaxAge:           12 * time.Hour,
 		}),
