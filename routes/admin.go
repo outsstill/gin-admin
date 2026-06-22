@@ -40,13 +40,13 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 		authGroup := admin.Group("/auth")
 		// 登录
 		lgc := controllers.NewAdminAuthController(base)
-		authGroup.POST("/login", middlewares.GuestJWT(), lgc.Login)
+		authGroup.POST("/login", middlewares.GuestJWT(), middlewares.LimitPerRoute(app, setting.Limit().LoginRate), lgc.Login)
 		authGroup.POST("/refresh-token", lgc.RefreshToken)
 		authGroup.GET("/current", lgc.Current)
 		authGroup.POST("/profile", lgc.UpdateProfile)
 		authGroup.POST("/profile-pass", lgc.UpdatePassword)
 		authGroup.POST("/logout", lgc.Logout)
-		authGroup.GET("/captcha", lgc.ShowCaptcha)
+		authGroup.GET("/captcha", middlewares.LimitPerRoute(app, setting.Limit().CaptchaRate), lgc.ShowCaptcha)
 
 		auc := controllers.NewAdminUserController(base)
 		// 账号
@@ -86,12 +86,12 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 		admin.DELETE("/permission/:id", apc.Delete)
 
 		// 配置
-		admin.GET("/configs", cc.Index)
-		admin.GET("/configs/all", cc.All)
-		admin.GET("/config/:id", cc.Get)
-		admin.POST("/config", cc.Store)
-		admin.PUT("/config/:id", cc.Update)
-		admin.DELETE("/config/:id", cc.Delete)
+		admin.GET("/configs", middlewares.LimitPerRoute(app, setting.Limit().QueryRate), cc.Index)
+		admin.GET("/configs/all", middlewares.LimitPerRoute(app, setting.Limit().QueryRate), cc.All)
+		admin.GET("/config/:id", middlewares.LimitPerRoute(app, setting.Limit().QueryRate), cc.Get)
+		admin.POST("/config", middlewares.LimitPerRoute(app, setting.Limit().StoreRate), cc.Store)
+		admin.PUT("/config/:id", middlewares.LimitPerRoute(app, setting.Limit().UpdateRate), cc.Update)
+		admin.DELETE("/config/:id", middlewares.LimitPerRoute(app, setting.Limit().DeleteRate), cc.Delete)
 
 		fc := controllers.NewAdminFileController(base)
 		admin.POST("/upload", fc.Upload)
