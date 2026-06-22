@@ -36,3 +36,11 @@ func (ic *AdminIndexController) Version(c *gin.Context) {
 		"data": setting.App().Version,
 	})
 }
+
+func (ic *AdminIndexController) LimitTest(c *gin.Context) {
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "LimitTest",
+	})
+}

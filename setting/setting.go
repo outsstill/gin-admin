@@ -16,6 +16,7 @@ type Setting struct {
 	JWT     JWTConfig     `mapstructure:"jwt" yaml:"jwt"`
 	Captcha CaptchaConfig `mapstructure:"captcha" yaml:"captcha"`
 	Paging  PagingConfig  `mapstructure:"paging" yaml:"paging"`
+	Limit   LimitConfig   `mapstructure:"limit" yaml:"limit"`
 }
 
 var cfg *Setting
@@ -73,6 +74,10 @@ func Captcha() CaptchaConfig {
 
 func Paging() PagingConfig {
 	return Get().Paging
+}
+
+func Limit() LimitConfig {
+	return Get().Limit
 }
 
 func IsLocal() bool {
@@ -190,4 +195,9 @@ type CaptchaConfig struct {
 type JWTConfig struct {
 	ExpireTime     int `mapstructure:"expire_time" yaml:"expire_time"`           // 过期时间，单位是分钟，一般不超过两个小时
 	MaxReFreshTime int `mapstructure:"max_refresh_time" yaml:"max_refresh_time"` // 允许刷新时间，单位分钟，从 Token 的签名时间算起
+}
+
+type LimitConfig struct {
+	Rate     string `mapstructure:"rate" yaml:"rate"` // 过期时间，单位是分钟，一般不超过两个小时
+	TestRate string `mapstructure:"test_rate" yaml:"test_rate"`
 }

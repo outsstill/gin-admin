@@ -99,6 +99,10 @@ log:
   type: "daily"
   level: "debug"
 
+limit:
+  rate: "500-H" #  全局限流中间件：每小时限流。这里是所有 API （根据 IP）请求加起来
+  test_rate: "5-M"
+
 # 微信相关
 wechat:
   # 微信支付配置文档： https://powerwechat.artisan-cloud.com/zh/payment/index.html#userconfig%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%EF%BC%9A
