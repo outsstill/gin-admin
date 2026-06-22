@@ -22,7 +22,7 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 		*/
 		path := c.FullPath()
 
-		ignorePermissionPaths := []string{"/auth/logout", "/auth/refresh-token", "/roles/all", "/permissions/all", "/menus/all", "/auth/current"}
+		ignorePermissionPaths := []string{"/auth/logout", "/auth/refresh-token", "/roles/all", "/permissions/all", "/menus/all", "/auth/current", "/limit-test"}
 
 		realIgnorePermissionPaths := make([]string, 0, len(ignorePermissionPaths))
 
