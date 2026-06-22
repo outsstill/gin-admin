@@ -41,7 +41,7 @@ func Error(c *gin.Context, err error, msg ...string) {
 }
 
 func Abort(c *gin.Context, code int, msg ...string) {
-	c.AbortWithStatusJSON(http.StatusOK, gin.H{
+	c.AbortWithStatusJSON(code, gin.H{
 		"code":    code,
 		"message": defaultMessage("数据不存在，请确定请求正确", msg...),
 	})
