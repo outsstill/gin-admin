@@ -50,11 +50,11 @@ func (l *OssStorage) Put(ctx context.Context, in PutObjectInput) (ObjectInfo, er
 	// 从请求中获取文件
 	fileName := in.File.Filename
 	fileSize := in.File.Size
-	objectName, nowFileName := setting.GetFileStorageFullPath(fileName, false)
+	keyFileName, nowFileName := setting.GetFileStorageFullPath(fileName, false)
 
 	_, err := l.ossClient.PutObject(ctx, &oss.PutObjectRequest{
 		Bucket: oss.Ptr(l.cfg.BucketName),
-		Key:    oss.Ptr(objectName),
+		Key:    oss.Ptr(keyFileName),
 		Body:   in.Reader,
 	})
 
@@ -64,10 +64,10 @@ func (l *OssStorage) Put(ctx context.Context, in PutObjectInput) (ObjectInfo, er
 
 	info := ObjectInfo{
 		Bucket:       l.cfg.BucketName,
-		Key:          nowFileName,
+		Key:          keyFileName,
 		Name:         nowFileName,
 		OriginName:   fileName,
-		Path:         objectName,
+		Path:         keyFileName,
 		Ext:          strings.ToLower(helpers.GetFileExt(in.Key)),
 		Storage:      l.BackendName(),
 		Size:         fileSize,

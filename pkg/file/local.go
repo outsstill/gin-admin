@@ -29,8 +29,8 @@ func NewLocalStorage(cfg LocalConfig) *LocalStorage { return &LocalStorage{cfg: 
 func (l *LocalStorage) BackendName() string { return "local" }
 
 func (l *LocalStorage) Put(ctx context.Context, in PutObjectInput) (ObjectInfo, error) {
-	full, nowFileName := setting.GetFileStorageFullPath(in.File.Filename, false)
-	full = l.cfg.BasePath + "/" + full // 真实的地址
+	keyFileName, nowFileName := setting.GetFileStorageFullPath(in.File.Filename, false)
+	full := l.cfg.BasePath + "/" + keyFileName // 真实的地址
 
 	full = strings.ReplaceAll(full, "\\", "/")
 	c := ctx.(*gin.Context)
@@ -41,7 +41,7 @@ func (l *LocalStorage) Put(ctx context.Context, in PutObjectInput) (ObjectInfo, 
 
 	info := ObjectInfo{
 		Bucket:       l.cfg.BasePath,
-		Key:          nowFileName,
+		Key:          keyFileName,
 		Name:         nowFileName,
 		OriginName:   in.Key,
 		Path:         full,
