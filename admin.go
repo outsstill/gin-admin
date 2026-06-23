@@ -4,9 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
@@ -140,6 +138,10 @@ func Register(r *gin.Engine, app *core.App, modules ...core.Module) {
 
 	// 注册中间件
 	//root.Use(middlewares.LimitIP("500-H"))
+	// 全局限流中间件：每小时限流。这里是所有 API （根据 IP）请求加起来。
+	// 作为参考 Github API 每小时最多 60 个请求（根据 IP）。
+	// 测试时，可以调高一点。
+	root.Use(middlewares.LimitIP(app, setting.Limit().Rate))
 	root.Use(middlewares.AuthAdminJWT(app))
 	root.Use(middlewares.OperationLog(app))
 
@@ -164,21 +166,21 @@ func Register(r *gin.Engine, app *core.App, modules ...core.Module) {
 
 func registerGlobalMiddleWare(router *gin.Engine) {
 	router.Use(
-		//gin.Logger(),
-		middlewares.Logger(),
-		middlewares.Recovery2(),
-		//cors.Default(),
-		//gin.Recovery(),
-		//middlewares.ForceUA(),
-		cors.New(cors.Config{
-			AllowAllOrigins: true,
-			//AllowOrigins:     []string{"http://localhost:4000"}, // 改成你的前端地址
-			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "access-token", "x-access-token"},
-			ExposeHeaders:    []string{"Content-Length", "Authorization"},
-			AllowCredentials: false,
-			MaxAge:           12 * time.Hour,
-		}),
+		////gin.Logger(),
+		//middlewares.Logger(),
+		//middlewares.Recovery2(),
+		////cors.Default(),
+		////gin.Recovery(),
+		////middlewares.ForceUA(),
+		//cors.New(cors.Config{
+		//	AllowAllOrigins: true,
+		//	//AllowOrigins:     []string{"http://localhost:4000"}, // 改成你的前端地址
+		//	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		//	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "access-token", "x-access-token"},
+		//	ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		//	AllowCredentials: false,
+		//	MaxAge:           12 * time.Hour,
+		//}),
 	)
 }
 
