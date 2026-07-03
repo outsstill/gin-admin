@@ -40,8 +40,8 @@ func GetBodyWriter(c *gin.Context) *responseBodyWriter {
 }
 
 type ResData struct {
-	Status int    `json:"status"`
-	Body   string `json:"body"`
+	Status int `json:"status"`
+	Body   any `json:"body"`
 }
 
 // Logger 记录请求日志

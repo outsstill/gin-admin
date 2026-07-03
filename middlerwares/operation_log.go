@@ -48,9 +48,18 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 				fullUrl += "?" + query
 			}
 
+			// 如果已经是json就不再转
+			var body any
+
+			if json.Valid(lw.body.Bytes()) {
+				body = json.RawMessage(lw.body.Bytes())
+			} else {
+				body = lw.body.String()
+			}
+
 			rData := &ResData{
 				Status: c.Writer.Status(),
-				Body:   lw.body.String(),
+				Body:   body,
 			}
 
 			jsonData, _ := json.Marshal(rData)
