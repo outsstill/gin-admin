@@ -41,7 +41,7 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 
 			// JWT 解析失败，有错误发生
 			if err != nil {
-				response.Abort401(c, fmt.Sprintf("请查看相关的接口认证文档 path：%s", path))
+				response.Abort401(c, "凭证过期，请重新登陆")
 				// response.AuthFail(c, fmt.Sprintf("请查看相关的接口认证文档 path：%s", path))
 				return
 			}
