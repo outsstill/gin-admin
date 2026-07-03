@@ -16,7 +16,7 @@ import (
 
 func OperationLog(app *core.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
+		lw := GetBodyWriter(c)
 		// 获取请求数据
 		var requestBody []byte
 		if c.Request.Body != nil {
@@ -48,12 +48,19 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 				fullUrl += "?" + query
 			}
 
+			rData := &ResData{
+				Status: c.Writer.Status(),
+				Body:   lw.body.String(),
+			}
+
+			jsonData, _ := json.Marshal(rData)
+
 			adminLog.Path = c.FullPath()
 			adminLog.Url = fullUrl
 			adminLog.Method = c.Request.Method
 			adminLog.Input = string(requestBody)
 			adminLog.Ip = c.ClientIP()
-			adminLog.Res = w.body.String()
+			adminLog.Res = string(jsonData)
 
 			go func() {
 				defer func() {

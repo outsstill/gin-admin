@@ -23,13 +23,33 @@ func (r responseBodyWriter) Write(b []byte) (int, error) {
 	return r.ResponseWriter.Write(b)
 }
 
+func GetBodyWriter(c *gin.Context) *responseBodyWriter {
+
+	if w, ok := c.Writer.(*responseBodyWriter); ok {
+		return w
+	}
+
+	w := &responseBodyWriter{
+		ResponseWriter: c.Writer,
+		body:           &bytes.Buffer{},
+	}
+
+	c.Writer = w
+
+	return w
+}
+
+type ResData struct {
+	Status int    `json:"status"`
+	Body   string `json:"body"`
+}
+
 // Logger 记录请求日志
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// 获取 response 内容
-		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
-		c.Writer = w
+		w := GetBodyWriter(c)
 
 		// 获取请求数据
 		var requestBody []byte
