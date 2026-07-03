@@ -14,6 +14,7 @@ type AdminLog struct {
 	Method    string              `json:"method" gorm:"column:method;type:varchar(255);index"`
 	Ip        string              `json:"ip" gorm:"column:ip;type:varchar(255);index"`
 	Input     string              `json:"input" gorm:"type:longtext;column:input"`
+	Res       string              `json:"res" gorm:"type:longtext;column:res"`
 	model.CommonTimestampsField
 }
 

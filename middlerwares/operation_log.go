@@ -16,7 +16,7 @@ import (
 
 func OperationLog(app *core.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
 		// 获取请求数据
 		var requestBody []byte
 		if c.Request.Body != nil {
@@ -53,6 +53,7 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 			adminLog.Method = c.Request.Method
 			adminLog.Input = string(requestBody)
 			adminLog.Ip = c.ClientIP()
+			adminLog.Res = w.body.String()
 
 			go func() {
 				defer func() {
