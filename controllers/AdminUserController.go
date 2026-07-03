@@ -48,9 +48,18 @@ func (uc *AdminUserController) Store(c *gin.Context) {
 }
 
 func (uc *AdminUserController) Update(c *gin.Context) {
-	model := uc.App.GetAdminUserService().Get(c.Param("id"))
+
+	id := c.Param("id")
+	model := uc.App.GetAdminUserService().Get(id)
 	if model.ID <= 0 {
 		response.Fail(c, "没有找到")
+		return
+	}
+
+	currentAdmin := uc.App.GetAuthService().CurrentAdminUser(c)
+
+	if model.IsSuperAdmin() && !currentAdmin.IsSuperAdmin() {
+		response.Fail(c, "非超级管理员不能修改超级管理员")
 		return
 	}
 
