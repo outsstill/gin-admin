@@ -141,9 +141,9 @@ func Register(r *gin.Engine, app *core.App, modules ...core.Module) {
 	// 全局限流中间件：每小时限流。这里是所有 API （根据 IP）请求加起来。
 	// 作为参考 Github API 每小时最多 60 个请求（根据 IP）。
 	// 测试时，可以调高一点。
+	root.Use(middlewares.OperationLog(app))
 	root.Use(middlewares.LimitIP(app, setting.Limit().Rate))
 	root.Use(middlewares.AuthAdminJWT(app))
-	root.Use(middlewares.OperationLog(app))
 
 	// 1️⃣ 内置模块
 	//for _, m := range builtinModules {
