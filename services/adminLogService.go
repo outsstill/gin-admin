@@ -51,6 +51,10 @@ func (service *AdminLogService) All() (models []adminLog.AdminLog) {
 func (service *AdminLogService) Paginate(c *gin.Context, perPage int) (data []adminLog.AdminLog, paging paginator.Paging) {
 	db := service.DB.Model(adminLog.AdminLog{})
 
+	if c.Query("status") != "" {
+		db = db.Where("status = ?", c.Query("status"))
+	}
+
 	if c.Query("path") != "" {
 		db = db.Where("path LIKE ?", c.Query("path")+"%")
 	}
