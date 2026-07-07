@@ -37,9 +37,9 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 				adminLog.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
 			}
 
-			if adminLog.UserId <= 0 {
-				return
-			}
+			//if adminLog.UserId <= 0 {
+			//	return
+			//}
 
 			fullUrl := c.Request.URL.Path
 			query := c.Request.URL.RawQuery
@@ -70,6 +70,7 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 			adminLog.Input = string(requestBody)
 			adminLog.Ip = c.ClientIP()
 			adminLog.Res = string(jsonData)
+			adminLog.Status = c.Writer.Status()
 
 			go func() {
 				defer func() {
