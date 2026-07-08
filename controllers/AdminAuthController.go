@@ -31,7 +31,7 @@ func (ac *AdminAuthController) Login(c *gin.Context) {
 
 	// 如果有验证码
 	if ok := ac.App.GetCaptchaService().VerifyCaptcha(request.CaptchaID, request.CaptchaAnswer); !ok {
-		response.Fail(c, "验证码错误")
+		response.Fail(c, "验证码错误!")
 		return
 	}
 
