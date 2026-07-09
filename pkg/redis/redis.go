@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/outsstill/gin-admin/pkg/logger"
+	"github.com/outsstill/go-kit/logger"
 	"github.com/redis/go-redis/v9"
 )
 

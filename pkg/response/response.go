@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/pkg/logger"
+	"github.com/outsstill/go-kit/logger"
 )
 
 func Success(c *gin.Context, msg ...string) {

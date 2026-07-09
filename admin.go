@@ -10,7 +10,6 @@ import (
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
 	"github.com/outsstill/gin-admin/pkg/cache"
 	"github.com/outsstill/gin-admin/pkg/captcha"
-	"github.com/outsstill/gin-admin/pkg/logger"
 	redisClient "github.com/outsstill/gin-admin/pkg/redis"
 	"github.com/outsstill/gin-admin/routes"
 	service "github.com/outsstill/gin-admin/services"
@@ -76,12 +75,6 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 	for _, opt := range opts {
 		opt(cfg)
 	}
-
-	if cfg.Logger == nil {
-		return nil, errors.New("logger is required")
-	}
-
-	logger.Init(cfg.Logger)
 
 	if cfg.DB == nil {
 		return nil, errors.New("db is required")

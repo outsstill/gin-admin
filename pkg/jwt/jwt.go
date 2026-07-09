@@ -8,8 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	jwtpkg "github.com/golang-jwt/jwt/v5"
-	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/outsstill/gin-admin/setting"
+	"github.com/outsstill/go-kit/logger"
 	"github.com/spf13/cast"
 )
 
