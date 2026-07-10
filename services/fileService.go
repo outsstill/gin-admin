@@ -22,7 +22,7 @@ type FileService struct {
 	DB      *gorm.DB
 }
 
-func NewFileService(drive ...string) *FileService {
+func NewFileService(db *gorm.DB, drive ...string) *FileService {
 
 	fileDrive := gokit.Config().Storage.Driver
 	if len(drive) > 0 {
@@ -45,6 +45,7 @@ func NewFileService(drive ...string) *FileService {
 	fileStorage := file.NewStorage(fileConfig)
 	return &FileService{
 		storage: fileStorage,
+		DB:      db,
 	}
 }
 
