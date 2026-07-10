@@ -21,10 +21,10 @@ storage:
     base_url: "http://localhost:8789"
     static_prefix: "static" #访问的替换字段避免暴露真实路径
   oss:
-    key_id: ""
-    key_secret: ""
+    key: ""
+    secret: ""
     region: "cn-shanghai"
-    bucket: "space-one"
+    bucket_name: "space-one"
     domain: "https://space-one.oss-cn-shanghai.aliyuncs.com"
   qiniu:
     id: ""
@@ -91,9 +91,9 @@ log:
 jwt:
   expires: 120 # 过期时间，单位是分钟，一般不超过两个小时
   max_refresh: 86400 # 允许刷新时间，单位分钟，86400 为两个月，从 Token 的签名时间算起
-  name: ""  # 一般使用 app.name
+  name: "tunnel"  # 一般使用 app.name
   key: "qwer"
-  timezone: "asia/shanghai"
+  timezone: "Asia/Shanghai"
   type: 1 # 可以给 前台,后台 分开设值
 
 captcha:
