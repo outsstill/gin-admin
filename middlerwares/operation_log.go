@@ -10,7 +10,7 @@ import (
 	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/model/adminLog"
 	"github.com/outsstill/gin-admin/pkg/auth"
-	"github.com/outsstill/gin-admin/pkg/logger"
+	"github.com/outsstill/go-kit/logger"
 	"github.com/spf13/cast"
 )
 

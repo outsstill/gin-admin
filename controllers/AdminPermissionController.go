@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/model/adminPermission"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/go-kit/response"
 )
 
 type AdminPermissionController struct {
@@ -46,7 +46,7 @@ func (uc *AdminPermissionController) Get(c *gin.Context) {
 func (uc *AdminPermissionController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminPermissionStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminPermissionStore); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminPermissionStore); !ok {
 		return
 	}
 
@@ -73,7 +73,7 @@ func (uc *AdminPermissionController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminPermissionUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminPermissionUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminPermissionUpdate); !ok {
 		return
 	}
 

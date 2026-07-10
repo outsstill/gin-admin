@@ -9,9 +9,9 @@ import (
 	fileModel "github.com/outsstill/gin-admin/model/file"
 	"github.com/outsstill/gin-admin/pkg/auth"
 	"github.com/outsstill/gin-admin/pkg/helpers"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
 	"github.com/outsstill/gin-admin/services"
+	"github.com/outsstill/go-kit/response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -82,7 +82,7 @@ func (uc *AdminFileController) CheckUploadStorage(storage string) error {
 func (uc *AdminFileController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminFileStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminFileStore); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminFileStore); !ok {
 		return
 	}
 
@@ -118,7 +118,7 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 		return
 	}
 
-	obj, err := service.NewFileService(uc.App.DB, uploadStorage).UploadFile(c)
+	obj, err := service.NewFileService(uploadStorage).UploadFile(c)
 
 	if err != nil {
 		response.Fail(c, err.Error())
@@ -142,7 +142,7 @@ func (uc *AdminFileController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminFileUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminFileUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminFileUpdate); !ok {
 		return
 	}
 
@@ -179,7 +179,7 @@ func (uc *AdminFileController) Delete(c *gin.Context) {
 		response.Fail(c, "没有找到")
 		return
 	}
-	err := service.NewFileService(uc.App.DB, model.Storage).DeleteFile(cast.ToString(model.ID))
+	err := service.NewFileService(model.Storage).DeleteFile(cast.ToString(model.ID))
 
 	if err != nil {
 		response.Fail(c, err.Error())

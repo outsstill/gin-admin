@@ -3,8 +3,8 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/model/adminMenu"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/go-kit/response"
 )
 
 type AdminMenuController struct {
@@ -44,7 +44,7 @@ func (uc *AdminMenuController) Get(c *gin.Context) {
 func (uc *AdminMenuController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminMenuStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminMenuStore); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminMenuStore); !ok {
 		return
 	}
 
@@ -72,7 +72,7 @@ func (uc *AdminMenuController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminMenuUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminMenuUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminMenuUpdate); !ok {
 		return
 	}
 

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/outsstill/gin-admin/pkg/helpers"
-	"github.com/outsstill/gin-admin/setting"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +28,7 @@ func NewLocalStorage(cfg LocalConfig) *LocalStorage { return &LocalStorage{cfg: 
 func (l *LocalStorage) BackendName() string { return "local" }
 
 func (l *LocalStorage) Put(ctx context.Context, in PutObjectInput) (ObjectInfo, error) {
-	keyFileName, nowFileName := setting.GetFileStorageFullPath(in.File.Filename, false)
+	keyFileName, nowFileName := helpers.GetFileStorageFullPath(in.File.Filename, false)
 	full := l.cfg.BasePath + "/" + keyFileName // 真实的地址
 
 	full = strings.ReplaceAll(full, "\\", "/")

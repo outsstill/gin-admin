@@ -1,12 +1,13 @@
 app:
   name: "go-demo"
   key: "abcd" # 一些加密需要使用 更换会影响现有业务，谨慎
-  url: "http://go-demo.overthewall.xyz"
+  url: ""
   http_port: "8789"
   file_url: "https://space-one.oss-cn-shanghai.aliyuncs.com"
-  env: "production",
+  env: "production"
   version: "1.0.0"
   debug: true
+
 # 云存储
 storage:
   driver: "local"
@@ -16,9 +17,9 @@ storage:
     - "png"
     - "jpeg"
   local:
-    path: "storage/files"
-    domain: "http://localhost:8789"
-    static: "static" #访问的替换字段避免暴露真实路径
+    base_path: "storage/files"
+    base_url: "http://localhost:8789"
+    static_prefix: "static" #访问的替换字段避免暴露真实路径
   oss:
     key_id: ""
     key_secret: ""
@@ -29,36 +30,14 @@ storage:
     id: ""
     key: ""
     domain: ""
+
 # 分页
 paging:
-  url_query_order: "order"
-  url_query_sort: "sort"
+  order: "order"
+  sort: "sort"
   perpage: 10
-  url_query_page: "page"
-  url_query_per_page: "per_page"
-
-# JWT
-jwt:
-  expire_time: 120 # 过期时间，单位是分钟，一般不超过两个小时
-  max_refresh_time: 86400 # 允许刷新时间，单位分钟，86400 为两个月，从 Token 的签名时间算起
-  debug_expire_time: 86400  # debug 模式下的过期时间，方便本地开发调试
-
-captcha:
-  height: 80 # 验证码图片高度
-  width: 120 # 验证码图片宽度
-  length: 6 # 验证码的长度
-  maxskew: 0.7 # 数字的最大倾斜角度
-  dotcount: 80 # 图片背景里的混淆点数量
-  expire_time: 15 # 过期时间，单位是分钟
-  debug_expire_time: 10086 # debug 模式下的过期时间，方便本地开发调试
-  testing_key: "captcha_skip_test" # 非 production 环境，使用此 key 可跳过验证，方便测试
-
-es:
-  hosts:
-    - http://localhost:9200
-    - http://localhost2:9200
-  username: ""
-  password: ""
+  query_page: "page"
+  query_per_page: "per_page"
 
 # 缓存
 redis:
@@ -68,17 +47,23 @@ redis:
   password: ""
   db: 1
   cache_db: 0
+  dial_timeout: 30
+  read_timeout: 30
+  write_timeout: 30
 
 # 数据库
 db:
   default: "mysql"
   mysql:
-    database: "notice-go"
+    database: ""
     username: "root"
-    password: "74fe6bb8e4deeec7"
+    password: ""
     host: "127.0.0.1"
     port: "3306"
     charset: "utf8mb4"
+    max_idle_conn: 100
+    max_open_conn: 100
+    max_life_time: 300
   sqlite:
     name: "sss"
 
@@ -97,17 +82,36 @@ log:
   max_age: "30"
   compress: false # 是否压缩，压缩日志不方便查看，我们设置为 false（压缩可节省空间）
   type: "daily"
-  level: "debug"
+  level: "debug",
+  encoding: "json"
+  to_console: true # 是否终端输出
+  to_file: true # 是否写入文件
 
-limit:
-  rate: "1000-H" #  全局限流中间件：每小时限流。这里是所有 API （根据 IP）请求加起来
-  test_rate: "5-M"
-  login_rate: "10-M"
-  captcha_rate: "2-M"
-  store_rate: "10-M"
-  update_rate: "10-M"
-  delete_rate: "10-M"
-  query_rate: "60-M"
+# JWT
+jwt:
+  expires: 120 # 过期时间，单位是分钟，一般不超过两个小时
+  max_refresh: 86400 # 允许刷新时间，单位分钟，86400 为两个月，从 Token 的签名时间算起
+  name: ""  # 一般使用 app.name
+  key: "qwer"
+  timezone: "asia/shanghai"
+  type: 1 # 可以给 前台,后台 分开设值
+
+captcha:
+  height: 80 # 验证码图片高度
+  width: 120 # 验证码图片宽度
+  length: 6 # 验证码的长度
+  maxskew: 0.7 # 数字的最大倾斜角度
+  dot_count: 80 # 图片背景里的混淆点数量
+  expire_time: 15 # 过期时间，单位是分钟
+  debug_expire_time: 10086 # debug 模式下的过期时间，方便本地开发调试
+  testing_key: "captcha_skip_test" # 非 production 环境，使用此 key 可跳过验证，方便测试
+
+es:
+  hosts:
+    - http://localhost:9200
+    - http://localhost2:9200
+  username: ""
+  password: ""
 
 # 微信相关
 wechat:
@@ -133,16 +137,16 @@ wechat:
   wecom:
     corpid: ww454dfb9d6f6d432a
 
-  # ----- powerwechat-docs-demo start ------
+    # ----- powerwechat-docs-demo start ------
     agent_id: 1000000
     secret: xxxxx
     messagetoken: xxxxx
     messageaeskey: xxxxx
     messagecallback: https://www.artisan-cloud.com/message/callback
     oauthcallback: https://www.artisan-cloud.com/oauth/callback
-  # ----- powerwechat-docs-demo end ------
+    # ----- powerwechat-docs-demo end ------
 
-  # 联系人配置
+    # 联系人配置
     contactsecret: xxxxx
     contacttoken: xxxxx
     contactaeskey: xxxxx

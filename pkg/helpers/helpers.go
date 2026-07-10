@@ -13,6 +13,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/spf13/cast"
 )
 
 // Empty 类似于 PHP 的 empty() 函数
@@ -179,4 +183,47 @@ func AppendIgnorePaths(v []string) {
 
 func Uint64Ptr(v uint64) *uint64 {
 	return &v
+}
+
+// TimenowInTimezone 获取当前时间，支持时区
+func TimenowInTimezone() time.Time {
+	chinaTimezone, _ := time.LoadLocation(gokit.Config().App.Timezone)
+	return time.Now().In(chinaTimezone)
+}
+
+// URL 传参 path 拼接站点的 URL
+func URL(path string) string {
+	return gokit.Config().App.Url + "/" + path
+}
+
+// VADMINURL 拼接带 admin 标示 URL
+func VADMINURL(path string) string {
+	return URL("/admin/" + path)
+}
+
+// V1URL 拼接带 v1 标示 URL
+func V1URL(path string) string {
+	return URL("/v1/" + path)
+}
+
+func GetFileStoragePath() string {
+	formatted := time.Now().Format("20060102")
+
+	return gokit.Config().App.Name + "/" + formatted
+}
+
+// 获取文件存储名称(包含完整路径)
+func GetFileStorageFullPath(fileName string, isOriginName bool) (string, string) {
+	originFileName := fileName
+	if !isOriginName {
+		fileOriExt := filepath.Ext(fileName) // 获取文件扩展名 这里包含了 .
+		//randomNumber := app.GetRandomNumber(16)
+		randomNumber := uuid.New().String()
+		// fileNameNoExt := fileName[:len(fileName)-len(fileOriExt)] // 文件名称 不含 .和后缀
+		originFileName = cast.ToString(randomNumber) + fileOriExt
+	}
+
+	objectName := GetFileStoragePath() + "/" + originFileName
+
+	return objectName, originFileName
 }

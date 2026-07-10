@@ -8,10 +8,10 @@ import (
 	"github.com/outsstill/gin-admin/model/adminMenu"
 	"github.com/outsstill/gin-admin/model/adminPermission"
 	"github.com/outsstill/gin-admin/model/adminRole"
+	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
-	"github.com/outsstill/gin-admin/setting"
+	"github.com/outsstill/go-kit/response"
 	"gorm.io/gorm"
 )
 
@@ -240,7 +240,7 @@ func (service *AdminRoleService) Paginate(c *gin.Context, perPage int) (users []
 		c,
 		service.DB.Model(adminRole.AdminRole{}),
 		&users,
-		setting.VADMINURL(model.TableName(&adminRole.AdminRole{})),
+		helpers.VADMINURL(model.TableName(&adminRole.AdminRole{})),
 		perPage,
 	)
 	return

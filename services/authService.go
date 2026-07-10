@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/outsstill/gin-admin/model/adminUser"
-	"github.com/outsstill/gin-admin/pkg/logger"
+	"github.com/outsstill/go-kit/logger"
 	"gorm.io/gorm"
 
 	"github.com/spf13/cast"

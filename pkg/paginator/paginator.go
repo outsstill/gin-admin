@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -100,8 +100,8 @@ func (p *Paginator) initProperties(perPage int, baseURL string) {
 	p.PerPage = p.getPerPage(perPage)
 
 	// 排序参数（控制器中以验证过这些参数，可放心使用）
-	p.Order = p.ctx.DefaultQuery(setting.Paging().UrlQueryOrder, "desc")
-	p.Sort = p.ctx.DefaultQuery(setting.Paging().UrlQuerySort, "id")
+	p.Order = p.ctx.DefaultQuery(gokit.Config().Paging.UrlQueryOrder, "desc")
+	p.Sort = p.ctx.DefaultQuery(gokit.Config().Paging.UrlQuerySort, "id")
 
 	p.TotalCount = p.getTotalCount()
 	p.TotalPage = p.getTotalPage()
@@ -111,14 +111,14 @@ func (p *Paginator) initProperties(perPage int, baseURL string) {
 
 func (p Paginator) getPerPage(perPage int) int {
 	// 优先使用请求 per_page 参数
-	queryPerpage := p.ctx.Query(setting.Paging().UrlQueryPerPage)
+	queryPerpage := p.ctx.Query(gokit.Config().Paging.UrlQueryPerPage)
 	if len(queryPerpage) > 0 {
 		perPage = cast.ToInt(queryPerpage)
 	}
 
 	// 没有传参，使用默认
 	if perPage <= 0 {
-		perPage = setting.Paging().PerPage
+		perPage = gokit.Config().Paging.PerPage
 	}
 
 	return perPage
@@ -127,7 +127,7 @@ func (p Paginator) getPerPage(perPage int) int {
 // getCurrentPage 返回当前页码
 func (p Paginator) getCurrentPage() int {
 	// 优先取用户请求的 page
-	page := cast.ToInt(p.ctx.Query(setting.Paging().UrlQueryPage))
+	page := cast.ToInt(p.ctx.Query(gokit.Config().Paging.UrlQueryPage))
 	if page <= 0 {
 		// 默认为 1
 		page = 1
@@ -167,9 +167,9 @@ func (p Paginator) getTotalPage() int {
 // 兼容 URL 带与不带 `?` 的情况
 func (p *Paginator) formatBaseURL(baseURL string) string {
 	if strings.Contains(baseURL, "?") {
-		baseURL = baseURL + "&" + setting.Paging().UrlQueryPage + "="
+		baseURL = baseURL + "&" + gokit.Config().Paging.UrlQueryPage + "="
 	} else {
-		baseURL = baseURL + "?" + setting.Paging().UrlQueryPage + "="
+		baseURL = baseURL + "?" + gokit.Config().Paging.UrlQueryPage + "="
 	}
 	return baseURL
 }
@@ -179,11 +179,11 @@ func (p Paginator) getPageLink(page int) string {
 	return fmt.Sprintf("%v%v&%s=%s&%s=%s&%s=%v",
 		p.BaseURL,
 		page,
-		setting.Paging().UrlQuerySort,
+		gokit.Config().Paging.UrlQuerySort,
 		p.Sort,
-		setting.Paging().UrlQueryOrder,
+		gokit.Config().Paging.UrlQueryOrder,
 		p.Order,
-		setting.Paging().UrlQueryPerPage,
+		gokit.Config().Paging.UrlQueryPerPage,
 		p.PerPage,
 	)
 }

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/pkg/logger"
-	"github.com/outsstill/gin-admin/pkg/response"
+	"github.com/outsstill/go-kit/logger"
+	"github.com/outsstill/go-kit/response"
 	"go.uber.org/zap"
 )
 

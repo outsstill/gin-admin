@@ -6,7 +6,7 @@ import (
 
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/pkg/helpers"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
 	"gorm.io/gorm"
 )
 
@@ -49,11 +49,11 @@ func (model *File) GetFileFullUrl() string {
 		storageDrive := model.Storage
 		url = ""
 		if storageDrive == "local" {
-			path := strings.ReplaceAll(model.Path, setting.Storage().Local.Path, setting.Storage().Local.StaticPrefix)
-			url = setting.Storage().Local.Domain
+			path := strings.ReplaceAll(model.Path, gokit.Config().Storage.Local.BasePath, gokit.Config().Storage.Local.StaticPrefix)
+			url = gokit.Config().Storage.Local.BaseURL
 			url = url + "/" + path
 		} else if storageDrive == "oss" {
-			url = setting.Storage().Oss.Domain
+			url = gokit.Config().Storage.Oss.Domain
 			url = url + "/" + model.Path
 		}
 	}
@@ -63,7 +63,7 @@ func (model *File) GetFileFullUrl() string {
 func (model *File) GetFileFullPath() string {
 	path := model.Path
 	if model.Storage == "local" {
-		path = setting.Storage().Local.Path + "/" + path
+		path = gokit.Config().Storage.Local.BasePath + "/" + path
 	} else {
 		path = model.Path
 	}

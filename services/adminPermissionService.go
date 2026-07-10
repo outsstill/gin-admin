@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/model"
 	"github.com/outsstill/gin-admin/model/adminPermission"
+	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
-	"github.com/outsstill/gin-admin/setting"
 	"gorm.io/gorm"
 )
 
@@ -49,7 +49,7 @@ func (service *AdminPermissionService) Paginate(c *gin.Context, perPage int) (us
 		c,
 		service.DB.Model(adminPermission.AdminPermission{}),
 		&users,
-		setting.VADMINURL(model.TableName(&adminPermission.AdminPermission{})),
+		helpers.VADMINURL(model.TableName(&adminPermission.AdminPermission{})),
 		perPage,
 	)
 	return

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/outsstill/gin-admin/model"
-	"gorm.io/gorm"
 )
 
 // 账号创建
@@ -17,7 +16,7 @@ type AdminUserStoreRequest struct {
 	AvatarId        uint   `json:"avatar_id" validate:"omitempty,numeric"`
 }
 
-func VerityAdminUserStore(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminUserStore(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Username": {
@@ -40,7 +39,7 @@ func VerityAdminUserStore(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -55,7 +54,7 @@ type AdminUserUpdateRequest struct {
 	AvatarId uint   `json:"avatar_id" validate:"omitempty,numeric"`
 }
 
-func VerityAdminUserUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminUserUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Username": {
@@ -69,7 +68,7 @@ func VerityAdminUserUpdate(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -82,7 +81,7 @@ type AdminRoleStoreRequest struct {
 	MenuIDs       []uint `json:"menu_ids"`
 }
 
-func VerityAdminRoleStore(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminRoleStore(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Name": {
@@ -94,7 +93,7 @@ func VerityAdminRoleStore(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -108,7 +107,7 @@ type AdminRoleUpdateRequest struct {
 	MenuIDs         []uint `json:"menu_ids"`
 }
 
-func VerityAdminRoleUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminRoleUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Name": {
@@ -120,7 +119,7 @@ func VerityAdminRoleUpdate(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -129,11 +128,11 @@ type AdminRoleUpdateMenusRequest struct {
 	MenuIDs []uint `json:"menu_ids"`
 }
 
-func VerityAdminRoleMenusUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminRoleMenusUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -142,11 +141,11 @@ type AdminRoleUpdatePermissionsRequest struct {
 	PermissionIDs []uint `json:"permission_ids"`
 }
 
-func VerityAdminRolePermissionsUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminRolePermissionsUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -161,7 +160,7 @@ type AdminMenuStoreRequest struct {
 	Icon     string `json:"icon"`
 }
 
-func VerityAdminMenuStore(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminMenuStore(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Name": {
@@ -183,7 +182,7 @@ func VerityAdminMenuStore(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -199,7 +198,7 @@ type AdminMenuUpdateRequest struct {
 	Path            string `json:"path"`
 }
 
-func VerityAdminMenuUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminMenuUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Name": {
@@ -213,7 +212,7 @@ func VerityAdminMenuUpdate(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -228,7 +227,7 @@ type AdminPermissionStoreRequest struct {
 	ParentId   uint64 `json:"parent_id" validate:"omitempty,numeric"`
 }
 
-func VerityAdminPermissionStore(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminPermissionStore(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Name": {
@@ -247,7 +246,7 @@ func VerityAdminPermissionStore(db *gorm.DB, obj interface{}) map[string][]strin
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -263,7 +262,7 @@ type AdminPermissionUpdateRequest struct {
 	ParentId        uint64 `json:"parent_id" validate:"omitempty,numeric"`
 }
 
-func VerityAdminPermissionUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminPermissionUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Title": {
@@ -277,7 +276,7 @@ func VerityAdminPermissionUpdate(db *gorm.DB, obj interface{}) map[string][]stri
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -290,7 +289,7 @@ type AdminLoginRequest struct {
 	CaptchaAnswer string `json:"captcha_answer,omitempty" validate:"required"`
 }
 
-func VerityAdminLogin(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminLogin(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Username": {
@@ -307,7 +306,7 @@ func VerityAdminLogin(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 	//// 手机验证码
 	//_data := obj.(*AdminLoginRequest)
 	//errors = ValidateCaptcha(db, _data.CaptchaID, _data.CaptchaAnswer, errors)
@@ -335,7 +334,7 @@ type AdminFileStoreRequest struct {
 	DeletedAt    *time.Time `json:"deleted_at"`
 }
 
-func VerityAdminFileStore(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminFileStore(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"OriginName": {
@@ -346,7 +345,7 @@ func VerityAdminFileStore(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -372,7 +371,7 @@ type AdminFileUpdateRequest struct {
 	DeletedAt       *time.Time `json:"deleted_at"`
 }
 
-func VerityAdminFileUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminFileUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"OriginName": {
@@ -383,7 +382,7 @@ func VerityAdminFileUpdate(db *gorm.DB, obj interface{}) map[string][]string {
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -392,7 +391,7 @@ type AdminUserProfileUpdateRequest struct {
 	Name string `json:"name" validate:"required"`
 }
 
-func VerityAdminUserProfileUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminUserProfileUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Name": {
@@ -400,7 +399,7 @@ func VerityAdminUserProfileUpdate(db *gorm.DB, obj interface{}) map[string][]str
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }
@@ -410,7 +409,7 @@ type AdminUserProfilePasswordUpdateRequest struct {
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
 
-func VerityAdminUserProfilePasswordUpdate(db *gorm.DB, obj interface{}) map[string][]string {
+func VerityAdminUserProfilePasswordUpdate(obj interface{}) map[string][]string {
 
 	messages := map[string]map[string]string{
 		"Password": {
@@ -423,7 +422,7 @@ func VerityAdminUserProfilePasswordUpdate(db *gorm.DB, obj interface{}) map[stri
 		},
 	}
 
-	errors := ValidateStruct(db, obj, messages)
+	errors := ValidateStruct(obj, messages)
 
 	return errors
 }

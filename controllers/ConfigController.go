@@ -2,8 +2,8 @@ package controllers
 
 import (
 	configModel "github.com/outsstill/gin-admin/model/config"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/go-kit/response"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +43,7 @@ func (uc *AdminConfigController) Get(c *gin.Context) {
 func (uc *AdminConfigController) Store(c *gin.Context) {
 	// 验证
 	request := requests.ConfigModelStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityConfigModelStore); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityConfigModelStore); !ok {
 		return
 	}
 
@@ -78,7 +78,7 @@ func (uc *AdminConfigController) Update(c *gin.Context) {
 	// 验证
 	request := requests.ConfigModelUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityConfigModelUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityConfigModelUpdate); !ok {
 		return
 	}
 

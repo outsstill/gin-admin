@@ -1,90 +1,19 @@
 package admin
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
-	"github.com/outsstill/gin-admin/pkg/cache"
 	"github.com/outsstill/gin-admin/pkg/captcha"
-	redisClient "github.com/outsstill/gin-admin/pkg/redis"
 	"github.com/outsstill/gin-admin/routes"
 	service "github.com/outsstill/gin-admin/services"
-	"github.com/outsstill/gin-admin/setting"
-	"github.com/redis/go-redis/v9"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
+	gokit "github.com/outsstill/go-kit"
 )
 
-func NewApp(prefix string, opts ...Option) (*core.App, error) {
-
-	cfg := &InitConfig{}
-
-	// 2️⃣ 应用手动配置（覆盖）
-	for _, opt := range opts {
-		opt(cfg)
-	}
-
-	if cfg.Config == nil {
-		return nil, errors.New("config is required")
-	}
-
-	if cfg.DB == nil {
-		return nil, errors.New("db is required")
-	}
-
-	if cfg.Redis == nil {
-		return nil, errors.New("redis is required")
-	}
-
-	if cfg.Logger == nil {
-		return nil, errors.New("logger is required")
-	}
-
-	rClient := redisClient.NewClient(cfg.Redis)
-
-	if len(prefix) == 0 {
-		prefix = "/admin"
-	}
-
-	app := &core.App{
-		Prefix: prefix,
-		DB:     cfg.DB,
-		Redis:  rClient,
-		Cache:  cfg.Cache,
-	}
-
-	return app, nil
-}
-func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core.App, error) {
-
-	cfg, err := loadConfig(filepath)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if cfg == nil {
-		return nil, errors.New("config is nil")
-	}
-
-	// 2️⃣ 应用手动配置（覆盖）
-	for _, opt := range opts {
-		opt(cfg)
-	}
-
-	if cfg.DB == nil {
-		return nil, errors.New("db is required")
-	}
-
-	if cfg.Redis == nil {
-		return nil, errors.New("redis is required")
-	}
-
-	rClient := redisClient.NewClient(cfg.Redis)
+func New(prefix string) (*core.App, error) {
 
 	if len(prefix) == 0 {
 		prefix = "/admin"
@@ -96,21 +25,18 @@ func NewAppWithConfigFile(filepath string, prefix string, opts ...Option) (*core
 
 	app := &core.App{
 		Prefix: prefix,
-		DB:     cfg.DB,
-		Redis:  rClient,
-		Cache:  cfg.Cache,
 	}
 
 	// 注册 services
-	app.Register("admin_log", service.NewAdminLogService(app.DB))
-	app.Register("admin_user", service.NewAdminUserService(app.DB))
-	app.Register("admin_role", service.NewAdminRoleService(app.DB))
-	app.Register("admin_menu", service.NewAdminMenuService(app.DB))
-	app.Register("admin_permission", service.NewAdminPermissionService(app.DB))
-	app.Register("file", service.NewFileService(app.DB))
-	app.Register("config", service.NewConfigService(app.DB))
-	app.Register("auth", service.NewAuthService(app.DB))
-	app.Register("captcha", captcha.NewCaptcha(app.Redis))
+	app.Register("admin_log", service.NewAdminLogService(gokit.DB().DB()))
+	app.Register("admin_user", service.NewAdminUserService(gokit.DB().DB()))
+	app.Register("admin_role", service.NewAdminRoleService(gokit.DB().DB()))
+	app.Register("admin_menu", service.NewAdminMenuService(gokit.DB().DB()))
+	app.Register("admin_permission", service.NewAdminPermissionService(gokit.DB().DB()))
+	app.Register("file", service.NewFileService())
+	app.Register("config", service.NewConfigService(gokit.DB().DB()))
+	app.Register("auth", service.NewAuthService(gokit.DB().DB()))
+	app.Register("captcha", captcha.NewCaptcha(gokit.Redis()))
 
 	return app, nil
 }
@@ -135,7 +61,7 @@ func Register(r *gin.Engine, app *core.App, modules ...core.Module) {
 	// 作为参考 Github API 每小时最多 60 个请求（根据 IP）。
 	// 测试时，可以调高一点。
 	root.Use(middlewares.OperationLog(app))
-	root.Use(middlewares.LimitIP(app, setting.Limit().Rate))
+	root.Use(middlewares.LimitIP(app, gokit.Config().Limit.Rate))
 	root.Use(middlewares.AuthAdminJWT(app))
 
 	// 1️⃣ 内置模块
@@ -192,59 +118,4 @@ func registerModule(app *core.App, root *gin.RouterGroup, m core.Module) {
 	}
 
 	m.Register(app, group)
-}
-
-type InitConfig struct {
-	DB     *gorm.DB
-	Redis  *redis.Client
-	Logger *zap.Logger
-	Config *setting.Setting
-	Cache  *cache.CacheService
-}
-
-type Option func(config *InitConfig)
-
-func loadConfig(path string) (*InitConfig, error) {
-
-	cfg := &InitConfig{}
-
-	set, err := setting.Load(path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Config = set
-
-	return cfg, nil
-}
-
-func WithConfig(setting *setting.Setting) Option {
-	return func(c *InitConfig) {
-		c.Config = setting
-	}
-}
-
-func WithLogger(logger *zap.Logger) Option {
-	return func(c *InitConfig) {
-		c.Logger = logger
-	}
-}
-
-func WithDB(db *gorm.DB) Option {
-	return func(c *InitConfig) {
-		c.DB = db
-	}
-}
-
-func WithRedis(redis *redis.Client) Option {
-	return func(c *InitConfig) {
-		c.Redis = redis
-	}
-}
-
-func WithCache(cache *cache.CacheService) Option {
-	return func(c *InitConfig) {
-		c.Cache = cache
-	}
 }

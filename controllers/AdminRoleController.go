@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/go-kit/response"
 )
 
 type AdminRoleController struct {
@@ -43,7 +43,7 @@ func (uc *AdminRoleController) Get(c *gin.Context) {
 func (uc *AdminRoleController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminRoleStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminRoleStore); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminRoleStore); !ok {
 		return
 	}
 
@@ -61,7 +61,7 @@ func (uc *AdminRoleController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminRoleUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminRoleUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminRoleUpdate); !ok {
 		return
 	}
 
@@ -79,7 +79,7 @@ func (uc *AdminRoleController) UpdateMenus(c *gin.Context) {
 
 	// 验证
 	request := requests.AdminRoleUpdateMenusRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminRoleMenusUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminRoleMenusUpdate); !ok {
 		return
 	}
 
@@ -97,7 +97,7 @@ func (uc *AdminRoleController) UpdatePermissions(c *gin.Context) {
 
 	// 验证
 	request := requests.AdminRoleUpdatePermissionsRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminRolePermissionsUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminRolePermissionsUpdate); !ok {
 		return
 	}
 

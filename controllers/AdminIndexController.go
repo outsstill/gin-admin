@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/pkg/logger"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/logger"
 )
 
 type AdminIndexController struct {
@@ -30,10 +30,10 @@ func (ic *AdminIndexController) Index(c *gin.Context) {
 }
 
 func (ic *AdminIndexController) Version(c *gin.Context) {
-	fmt.Printf("%v \n", setting.Get())
+	fmt.Printf("%v \n", gokit.Config().All())
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
-		"data": setting.App().Version,
+		"data": gokit.Config().App.Version,
 	})
 }
 

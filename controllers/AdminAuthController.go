@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/pkg/helpers"
-	"github.com/outsstill/gin-admin/pkg/jwt"
-	"github.com/outsstill/gin-admin/pkg/logger"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/jwt"
+	"github.com/outsstill/go-kit/logger"
+	"github.com/outsstill/go-kit/response"
 )
 
 type AdminAuthController struct {
@@ -25,7 +25,7 @@ func NewAdminAuthController(base *BaseAPIController) *AdminAuthController {
 func (ac *AdminAuthController) Login(c *gin.Context) {
 	// 验证
 	request := requests.AdminLoginRequest{}
-	if ok := requests.ValidateFunc(c, ac.App.DB, &request, requests.VerityAdminLogin); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminLogin); !ok {
 		return
 	}
 
@@ -47,7 +47,12 @@ func (ac *AdminAuthController) Login(c *gin.Context) {
 		response.Fail(c, "账号不存在或密码错误")
 		return
 	} else {
-		token := jwt.NewJWT().IssueAdminToken(userModel.GetStringID(), userModel.Username)
+		token, err := gokit.JWT().IssueToken(userModel.GetStringID(), userModel.Username, jwt.ADMIN_TOKEN_TYPE)
+
+		if err != nil {
+			response.Fail(c, "生成token错误:"+err.Error())
+			return
+		}
 
 		// 获取账号的显示菜单
 		//menus, errs := adminUser.GetUserMenus(userModel.ID)
@@ -83,7 +88,7 @@ func (ac *AdminAuthController) Current(c *gin.Context) {
 // RefreshToken 刷新 Access Token
 func (ac *AdminAuthController) RefreshToken(c *gin.Context) {
 
-	token, err := jwt.NewJWT().RefreshToken(c)
+	token, err := gokit.JWT().RefreshTokenGin(c)
 
 	if err != nil {
 		response.Error(c, err, "令牌刷新失败")
@@ -99,7 +104,7 @@ func (ac *AdminAuthController) ShowCaptcha(c *gin.Context) {
 	// 生成验证码
 	id, b64s, answer, err := ac.App.GetCaptchaService().GenerateCaptcha()
 
-	if setting.IsDebug() {
+	if gokit.Config().App.Debug {
 		fmt.Printf("获取验证码 id:%s answer:%s\n", id, answer)
 	}
 
@@ -118,7 +123,7 @@ func (ac *AdminAuthController) UpdateProfile(c *gin.Context) {
 
 	// 验证
 	request := requests.AdminUserProfileUpdateRequest{}
-	if ok := requests.ValidateFunc(c, ac.App.DB, &request, requests.VerityAdminUserProfileUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminUserProfileUpdate); !ok {
 		return
 	}
 
@@ -137,7 +142,7 @@ func (ac *AdminAuthController) UpdatePassword(c *gin.Context) {
 
 	// 验证
 	request := requests.AdminUserProfilePasswordUpdateRequest{}
-	if ok := requests.ValidateFunc(c, ac.App.DB, &request, requests.VerityAdminUserProfilePasswordUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminUserProfilePasswordUpdate); !ok {
 		return
 	}
 

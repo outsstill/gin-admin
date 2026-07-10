@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/outsstill/gin-admin/core"
-	"github.com/outsstill/gin-admin/pkg/logger"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/logger"
 
 	"github.com/gin-gonic/gin"
 	limiterlib "github.com/ulule/limiter/v3"
@@ -45,9 +45,9 @@ func (l *Limiter) CheckRate(c *gin.Context, key string, formatted string) (limit
 	}
 
 	// 初始化存储，使用我们程序里共用的 redis.Redis 对象
-	store, err := sredis.NewStoreWithOptions(l.App.Redis.Client, limiterlib.StoreOptions{
+	store, err := sredis.NewStoreWithOptions(gokit.Redis().Client, limiterlib.StoreOptions{
 		// 为 limiter 设置前缀，保持 redis 里数据的整洁
-		Prefix: setting.App().Name + ":limiter",
+		Prefix: gokit.Config().App.Name + ":limiter",
 	})
 	if err != nil {
 		logger.LogIf(err)

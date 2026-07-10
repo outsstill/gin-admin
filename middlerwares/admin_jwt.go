@@ -7,8 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/pkg/helpers"
-	"github.com/outsstill/gin-admin/pkg/jwt"
-	"github.com/outsstill/gin-admin/pkg/response"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/jwt"
+	"github.com/outsstill/go-kit/response"
 )
 
 func AuthAdminJWT(app *core.App) gin.HandlerFunc {
@@ -37,7 +38,7 @@ func AuthAdminJWT(app *core.App) gin.HandlerFunc {
 		//
 		if !helpers.StringContains(ignorePaths, path) {
 			// 从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
-			claims, err := jwt.NewJWT().ParserToken(c)
+			claims, err := gokit.JWT().ParserTokenGin(c)
 
 			// JWT 解析失败，有错误发生
 			if err != nil {

@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
 	"github.com/outsstill/gin-admin/pkg/limiter"
-	"github.com/outsstill/gin-admin/pkg/logger"
-	"github.com/outsstill/gin-admin/pkg/response"
+	"github.com/outsstill/go-kit/logger"
+	"github.com/outsstill/go-kit/response"
 	"github.com/spf13/cast"
 )
 

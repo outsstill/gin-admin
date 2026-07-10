@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/mojocn/base64Captcha"
-	redisClient "github.com/outsstill/gin-admin/pkg/redis"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/redis"
 )
 
 type Captcha struct {
@@ -20,7 +20,7 @@ var once sync.Once
 var internalCaptcha *Captcha
 
 // NewCaptcha 单例模式获取
-func NewCaptcha(redis *redisClient.RedisClient) *Captcha {
+func NewCaptcha(redis *redis.RedisClient) *Captcha {
 	once.Do(func() {
 		// 初始化 Captcha 对象
 		internalCaptcha = &Captcha{}
@@ -28,16 +28,16 @@ func NewCaptcha(redis *redisClient.RedisClient) *Captcha {
 		// 使用全局 Redis 对象，并配置存储 Key 的前缀
 		store := RedisStore{
 			RedisClient: redis,
-			KeyPrefix:   setting.App().Name + ":captcha:",
+			KeyPrefix:   gokit.Config().App.Name + ":captcha:",
 		}
 
 		// 配置 base64Captcha 驱动信息
 		driver := base64Captcha.NewDriverDigit(
-			setting.Captcha().Height,
-			setting.Captcha().Width,
-			setting.Captcha().Length,
-			setting.Captcha().Maxskew,
-			setting.Captcha().Dotcount,
+			gokit.Config().Captcha.Height,
+			gokit.Config().Captcha.Width,
+			gokit.Config().Captcha.Length,
+			gokit.Config().Captcha.Maxskew,
+			gokit.Config().Captcha.DotCount,
 		)
 
 		// 实例化 base64Captcha 并赋值给内部使用的 internalCaptcha 对象
@@ -55,7 +55,7 @@ func (c *Captcha) GenerateCaptcha() (id string, b64s, answer string, err error) 
 // VerifyCaptcha 验证验证码是否正确
 func (c *Captcha) VerifyCaptcha(id string, answer string) (match bool) {
 	// 方便本地和 API 自动测试
-	if !setting.IsProduction() && id == setting.Captcha().TestingKey {
+	if gokit.Config().App.Debug && id == gokit.Config().Captcha.TestingKey {
 		return true
 	}
 

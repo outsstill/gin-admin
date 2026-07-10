@@ -1,11 +1,8 @@
 package core
 
 import (
-	"github.com/outsstill/gin-admin/pkg/cache"
 	"github.com/outsstill/gin-admin/pkg/captcha"
-	redisClient "github.com/outsstill/gin-admin/pkg/redis"
 	service "github.com/outsstill/gin-admin/services"
-	"gorm.io/gorm"
 )
 
 type ServiceInterface interface {
@@ -18,9 +15,6 @@ type ServiceRegistrar interface {
 
 type App struct {
 	Prefix   string
-	DB       *gorm.DB
-	Redis    *redisClient.RedisClient
-	Cache    *cache.CacheService
 	services map[string]any
 }
 

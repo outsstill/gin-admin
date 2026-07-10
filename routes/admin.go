@@ -10,8 +10,8 @@ import (
 	"github.com/outsstill/gin-admin/controllers"
 	"github.com/outsstill/gin-admin/core"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
-	"github.com/outsstill/gin-admin/pkg/response"
-	"github.com/outsstill/gin-admin/setting"
+	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/response"
 )
 
 // RegisterAdminRoutes 注册 admin 相关路由
@@ -28,26 +28,26 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 	// 全局限流中间件：每小时限流。这里是所有 API （根据 IP）请求加起来。
 	// 作为参考 Github API 每小时最多 60 个请求（根据 IP）。
 	// 测试时，可以调高一点。
-	//admin.Use(middlewares.LimitIP(app, setting.Limit().Rate))
+	//admin.Use(middlewares.LimitIP(app, gokit.Config().Limit.Rate))
 	//admin.Use(middlewares.AuthAdminJWT(app))
 	{
 		ic := controllers.NewAdminIndexController(base)
 		cc := controllers.NewAdminConfigController(base)
 		admin.GET("/index", ic.Index)
-		admin.GET("/limit-test", middlewares.LimitPerRoute(app, setting.Limit().TestRate), ic.LimitTest)
+		admin.GET("/limit-test", middlewares.LimitPerRoute(app, gokit.Config().Limit.TestRate), ic.LimitTest)
 		admin.GET("/version", ic.Version)
 		admin.GET("/setting-all", cc.AllShow)
 
 		authGroup := admin.Group("/auth")
 		// 登录
 		lgc := controllers.NewAdminAuthController(base)
-		authGroup.POST("/login", middlewares.GuestJWT(), middlewares.LimitPerRoute(app, setting.Limit().LoginRate), lgc.Login)
+		authGroup.POST("/login", middlewares.GuestJWT(), middlewares.LimitPerRoute(app, gokit.Config().Limit.LoginRate), lgc.Login)
 		authGroup.POST("/refresh-token", lgc.RefreshToken)
 		authGroup.GET("/current", lgc.Current)
 		authGroup.POST("/profile", lgc.UpdateProfile)
 		authGroup.POST("/profile-pass", lgc.UpdatePassword)
 		authGroup.POST("/logout", lgc.Logout)
-		authGroup.GET("/captcha", middlewares.LimitPerRoute(app, setting.Limit().CaptchaRate), lgc.ShowCaptcha)
+		authGroup.GET("/captcha", middlewares.LimitPerRoute(app, gokit.Config().Limit.CaptchaRate), lgc.ShowCaptcha)
 
 		auc := controllers.NewAdminUserController(base)
 		// 账号
@@ -87,12 +87,12 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 		admin.DELETE("/permission/:id", apc.Delete)
 
 		// 配置
-		admin.GET("/configs", middlewares.LimitPerRoute(app, setting.Limit().QueryRate), cc.Index)
-		admin.GET("/configs/all", middlewares.LimitPerRoute(app, setting.Limit().QueryRate), cc.All)
-		admin.GET("/config/:id", middlewares.LimitPerRoute(app, setting.Limit().QueryRate), cc.Get)
-		admin.POST("/config", middlewares.LimitPerRoute(app, setting.Limit().StoreRate), cc.Store)
-		admin.PUT("/config/:id", middlewares.LimitPerRoute(app, setting.Limit().UpdateRate), cc.Update)
-		admin.DELETE("/config/:id", middlewares.LimitPerRoute(app, setting.Limit().DeleteRate), cc.Delete)
+		admin.GET("/configs", middlewares.LimitPerRoute(app, gokit.Config().Limit.QueryRate), cc.Index)
+		admin.GET("/configs/all", middlewares.LimitPerRoute(app, gokit.Config().Limit.QueryRate), cc.All)
+		admin.GET("/config/:id", middlewares.LimitPerRoute(app, gokit.Config().Limit.QueryRate), cc.Get)
+		admin.POST("/config", middlewares.LimitPerRoute(app, gokit.Config().Limit.StoreRate), cc.Store)
+		admin.PUT("/config/:id", middlewares.LimitPerRoute(app, gokit.Config().Limit.UpdateRate), cc.Update)
+		admin.DELETE("/config/:id", middlewares.LimitPerRoute(app, gokit.Config().Limit.DeleteRate), cc.Delete)
 
 		fc := controllers.NewAdminFileController(base)
 		admin.POST("/upload", fc.Upload)
@@ -116,8 +116,8 @@ func RegisterStaticRoutes(r *gin.Engine) {
 
 	staticPath := "static"
 
-	if setting.Storage().Local.StaticPrefix != "" {
-		staticPath = setting.Storage().Local.StaticPrefix
+	if gokit.Config().Storage.Local.StaticPrefix != "" {
+		staticPath = gokit.Config().Storage.Local.StaticPrefix
 	}
 
 	staticRoute := fmt.Sprintf("/%s", staticPath)

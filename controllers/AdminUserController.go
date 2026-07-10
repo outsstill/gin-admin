@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
+	"github.com/outsstill/go-kit/response"
 )
 
 type AdminUserController struct {
@@ -38,7 +38,7 @@ func (uc *AdminUserController) Get(c *gin.Context) {
 func (uc *AdminUserController) Store(c *gin.Context) {
 	// 验证
 	request := requests.AdminUserStoreRequest{}
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminUserStore); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminUserStore); !ok {
 		return
 	}
 
@@ -66,7 +66,7 @@ func (uc *AdminUserController) Update(c *gin.Context) {
 	// 验证
 	request := requests.AdminUserUpdateRequest{}
 	request.ID = model.ID
-	if ok := requests.ValidateFunc(c, uc.App.DB, &request, requests.VerityAdminUserUpdate); !ok {
+	if ok := requests.ValidateFunc(c, &request, requests.VerityAdminUserUpdate); !ok {
 		return
 	}
 
