@@ -22,7 +22,7 @@ type FileService struct {
 	DB      *gorm.DB
 }
 
-func NewFileService(db *gorm.DB, drive ...string) *FileService {
+func NewFileService(drive ...string) *FileService {
 
 	fileDrive := gokit.Config().Storage.Driver
 	if len(drive) > 0 {
@@ -45,7 +45,6 @@ func NewFileService(db *gorm.DB, drive ...string) *FileService {
 	fileStorage := file.NewStorage(fileConfig)
 	return &FileService{
 		storage: fileStorage,
-		DB:      db,
 	}
 }
 
@@ -123,32 +122,32 @@ func (service *FileService) DeleteFile(id string) error {
 }
 
 func (service *FileService) Create(model *fileModel.File) {
-	service.DB.Create(model)
+	gokit.DB().DB().Create(model)
 }
 
 func (service *FileService) Save(model *fileModel.File) (rowsAffected int64) {
-	result := service.DB.Save(model)
+	result := gokit.DB().DB().Save(model)
 	return result.RowsAffected
 }
 
 func (service *FileService) Delete(model *fileModel.File) (rowsAffected int64) {
-	result := service.DB.Delete(model)
+	result := gokit.DB().DB().Delete(model)
 	return result.RowsAffected
 }
 
 func (service *FileService) Get(idstr string) (model *fileModel.File) {
-	service.DB.Where("id", idstr).First(&model)
+	gokit.DB().DB().Where("id", idstr).First(&model)
 	return
 }
 
 func (service *FileService) All() (models []fileModel.File) {
-	service.DB.Find(&models)
+	gokit.DB().DB().Find(&models)
 	return
 }
 
 // Paginate 分页内容
 func (service *FileService) Paginate(c *gin.Context, perPage int) (users []fileModel.File, paging paginator.Paging) {
-	db := service.DB.Model(fileModel.File{})
+	db := gokit.DB().DB().Model(fileModel.File{})
 	if c.Query("storage") != "" {
 		db = db.Where("storage = ?", c.Query("storage"))
 	}

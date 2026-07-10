@@ -33,7 +33,7 @@ func New(prefix string) (*core.App, error) {
 	app.Register("admin_role", service.NewAdminRoleService(gokit.DB().DB()))
 	app.Register("admin_menu", service.NewAdminMenuService(gokit.DB().DB()))
 	app.Register("admin_permission", service.NewAdminPermissionService(gokit.DB().DB()))
-	app.Register("file", service.NewFileService(gokit.DB().DB()))
+	app.Register("file", service.NewFileService())
 	app.Register("config", service.NewConfigService(gokit.DB().DB()))
 	app.Register("auth", service.NewAuthService(gokit.DB().DB()))
 	app.Register("captcha", captcha.NewCaptcha(gokit.Redis()))
