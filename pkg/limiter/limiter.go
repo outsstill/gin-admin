@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/outsstill/gin-admin/core"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/outsstill/gin-admin/setting"
-	"github.com/outsstill/go-kit/logger"
 
 	"github.com/gin-gonic/gin"
 	limiterlib "github.com/ulule/limiter/v3"

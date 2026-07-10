@@ -2,7 +2,7 @@
 package hash
 
 import (
-	"github.com/outsstill/go-kit/logger"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/jwt"
+	"github.com/outsstill/gin-admin/pkg/logger"
 	"github.com/outsstill/gin-admin/pkg/response"
 	"github.com/outsstill/gin-admin/requests"
 	"github.com/outsstill/gin-admin/setting"
-	"github.com/outsstill/go-kit/logger"
 )
 
 type AdminAuthController struct {
