@@ -37,7 +37,7 @@ func NewFileService(drive ...string) *FileService {
 		},
 		OssConfig: file.OssConfig{
 			Region:     gokit.Config().Storage.Oss.Region,
-			BucketName: gokit.Config().Storage.Oss.BucketName,
+			BucketName: gokit.Config().Storage.Oss.Bucket,
 			Key:        gokit.Config().Storage.Oss.Key,
 			Secret:     gokit.Config().Storage.Oss.Secret,
 		},
