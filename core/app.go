@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/outsstill/gin-admin/pkg/captcha"
 	service "github.com/outsstill/gin-admin/services"
 )
 
@@ -55,8 +54,4 @@ func (a *App) GetFileService() *service.FileService {
 
 func (a *App) GetAuthService() *service.AuthService {
 	return a.services["auth"].(*service.AuthService)
-}
-
-func (a *App) GetCaptchaService() *captcha.Captcha {
-	return a.services["captcha"].(*captcha.Captcha)
 }

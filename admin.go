@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/core"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
-	"github.com/outsstill/gin-admin/pkg/captcha"
 	"github.com/outsstill/gin-admin/routes"
 	service "github.com/outsstill/gin-admin/services"
 	gokit "github.com/outsstill/go-kit"
@@ -28,15 +27,14 @@ func New(prefix string) (*core.App, error) {
 	}
 
 	// 注册 services
-	app.Register("admin_log", service.NewAdminLogService(gokit.DB().DB()))
-	app.Register("admin_user", service.NewAdminUserService(gokit.DB().DB()))
-	app.Register("admin_role", service.NewAdminRoleService(gokit.DB().DB()))
-	app.Register("admin_menu", service.NewAdminMenuService(gokit.DB().DB()))
-	app.Register("admin_permission", service.NewAdminPermissionService(gokit.DB().DB()))
+	app.Register("admin_log", service.NewAdminLogService(gokit.DB()))
+	app.Register("admin_user", service.NewAdminUserService(gokit.DB()))
+	app.Register("admin_role", service.NewAdminRoleService(gokit.DB()))
+	app.Register("admin_menu", service.NewAdminMenuService(gokit.DB()))
+	app.Register("admin_permission", service.NewAdminPermissionService(gokit.DB()))
 	app.Register("file", service.NewFileService())
-	app.Register("config", service.NewConfigService(gokit.DB().DB()))
-	app.Register("auth", service.NewAuthService(gokit.DB().DB()))
-	app.Register("captcha", captcha.NewCaptcha(gokit.Redis()))
+	app.Register("config", service.NewConfigService(gokit.DB()))
+	app.Register("auth", service.NewAuthService(gokit.DB()))
 
 	return app, nil
 }
@@ -85,21 +83,21 @@ func Register(r *gin.Engine, app *core.App, modules ...core.Module) {
 
 func registerGlobalMiddleWare(router *gin.Engine) {
 	router.Use(
-		////gin.Logger(),
-		//middlewares.Logger(),
-		//middlewares.Recovery2(),
-		////cors.Default(),
-		////gin.Recovery(),
-		////middlewares.ForceUA(),
-		//cors.New(cors.Config{
-		//	AllowAllOrigins: true,
-		//	//AllowOrigins:     []string{"http://localhost:4000"}, // 改成你的前端地址
-		//	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		//	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "access-token", "x-access-token"},
-		//	ExposeHeaders:    []string{"Content-Length", "Authorization"},
-		//	AllowCredentials: false,
-		//	MaxAge:           12 * time.Hour,
-		//}),
+	////gin.Logger(),
+	//middlewares.Logger(),
+	//middlewares.Recovery2(),
+	////cors.Default(),
+	////gin.Recovery(),
+	////middlewares.ForceUA(),
+	//cors.New(cors.Config{
+	//	AllowAllOrigins: true,
+	//	//AllowOrigins:     []string{"http://localhost:4000"}, // 改成你的前端地址
+	//	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	//	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "access-token", "x-access-token"},
+	//	ExposeHeaders:    []string{"Content-Length", "Authorization"},
+	//	AllowCredentials: false,
+	//	MaxAge:           12 * time.Hour,
+	//}),
 	)
 }
 

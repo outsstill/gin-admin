@@ -5,9 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/outsstill/gin-admin/pkg/captcha"
 	gokit "github.com/outsstill/go-kit"
-	"github.com/outsstill/go-kit/redis"
 	"github.com/outsstill/go-kit/response"
 )
 
@@ -48,7 +46,7 @@ func ValidateStruct(data interface{}, messages map[string]map[string]string) map
 		tableName := parts[0]
 		columnName := parts[1]
 
-		var query = gokit.DB().DB().Table(tableName).Where(columnName+" = ?", fl.Field().Interface())
+		var query = gokit.DB().Table(tableName).Where(columnName+" = ?", fl.Field().Interface())
 
 		if len(parts) == 4 {
 			// 更新时：排除自身 ID
@@ -94,12 +92,5 @@ func ValidateStruct(data interface{}, messages map[string]map[string]string) map
 		errs[field] = append(errs[field], msg)
 	}
 
-	return errs
-}
-
-func ValidateCaptcha(redis *redis.RedisClient, captchaID, captchaAnswer string, errs map[string][]string) map[string][]string {
-	if ok := captcha.NewCaptcha(redis).VerifyCaptcha(captchaID, captchaAnswer); !ok {
-		errs["captcha_answer"] = append(errs["captcha_answer"], "图片验证码错误")
-	}
 	return errs
 }

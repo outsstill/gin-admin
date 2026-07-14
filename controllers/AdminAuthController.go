@@ -30,7 +30,13 @@ func (ac *AdminAuthController) Login(c *gin.Context) {
 	}
 
 	// 如果有验证码
-	if ok := ac.App.GetCaptchaService().VerifyCaptcha(request.CaptchaID, request.CaptchaAnswer); !ok {
+	ok, err := gokit.Captcha().Verify(request.CaptchaID, request.CaptchaAnswer)
+	if err != nil {
+		response.Fail(c, "验证码 Verify 错误:"+err.Error())
+		return
+	}
+
+	if !ok {
 		response.Fail(c, "验证码错误!")
 		return
 	}
@@ -102,7 +108,7 @@ func (ac *AdminAuthController) RefreshToken(c *gin.Context) {
 // ShowCaptcha 显示图片验证码
 func (ac *AdminAuthController) ShowCaptcha(c *gin.Context) {
 	// 生成验证码
-	id, b64s, answer, err := ac.App.GetCaptchaService().GenerateCaptcha()
+	id, b64s, answer, err := gokit.Captcha().Generate()
 
 	if gokit.Config().App.Debug {
 		fmt.Printf("获取验证码 id:%s answer:%s\n", id, answer)

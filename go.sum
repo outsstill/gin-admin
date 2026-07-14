@@ -123,6 +123,8 @@ github.com/outsstill/go-kit v1.1.24 h1:JT5Y3FRsFCX9qAYeZpYkbtp2lad5cOi75BSQEqez4
 github.com/outsstill/go-kit v1.1.24/go.mod h1:Pm5INN3jJ//7IpmMykZbsz5T8ib8dX09b5dA0pcOEQE=
 github.com/outsstill/go-kit v1.1.32 h1:ZNABbzPWgfVcWnJKXZ6QfLWMZIm9JAqhXSN5PGnrlVY=
 github.com/outsstill/go-kit v1.1.32/go.mod h1:eSyEZcIA5oIQaAAHvHiOeYYhl2yADA2wNtZMd6jGeHc=
+github.com/outsstill/go-kit v1.1.37 h1:RVNypXpSBL1ZIBQHG/RfwEDAxvIsqhgQJ04lxVJJ3e0=
+github.com/outsstill/go-kit v1.1.37/go.mod h1:eSyEZcIA5oIQaAAHvHiOeYYhl2yADA2wNtZMd6jGeHc=
 github.com/patrickmn/go-cache v2.1.0+incompatible h1:HRMgzkcYKYpi3C8ajMPV8OFXaaRUnok+kx1WdO15EQc=
 github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTKqZju1ZixQ/KpMGzzAfe6+WQ=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
