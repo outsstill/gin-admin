@@ -7,10 +7,12 @@ import (
 
 	"github.com/outsstill/gin-admin/model"
 	fileModel "github.com/outsstill/gin-admin/model/file"
+	"github.com/outsstill/gin-admin/pkg/auth"
 	"github.com/outsstill/gin-admin/pkg/file"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
 	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/storage"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -49,6 +51,9 @@ func NewFileService(drive ...string) *FileService {
 }
 
 func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) {
+
+	uploadStorage := c.PostForm("uploadStorage")
+
 	// 从 form-data 获取文件
 	fileObj, header, err := c.Request.FormFile("file")
 	if err != nil {
@@ -67,41 +72,49 @@ func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) 
 		return nil, errors.New("文件格式不允许 只允许[ " + strings.Join(extLimit, " ") + " ]")
 	}
 
-	input := file.PutObjectInput{
-		Key:         header.Filename,
+	storageConfig := gokit.Config().Storage.ToStorage()
+	storageConfig.Driver = uploadStorage
+
+	storageDriver, err := storage.New(storageConfig)
+
+	if err != nil {
+		return nil, err
+	}
+
+	input := &storage.UploadRequest{
+		Filename:    header.Filename,
+		Path:        header.Filename,
 		Size:        header.Size,
 		ContentType: header.Header.Get("Content-Type"),
 		Reader:      fileObj,
-		File:        header,
 		Meta:        map[string]string{},
 	}
 
-	// 上传
-	obj, putErr := service.storage.Put(c, input)
-	if putErr != nil {
-		return nil, putErr
+	obj, err := storageDriver.Driver().Put(c, input)
+
+	if err != nil {
+		return nil, err
 	}
 
 	// 存入数据库
 	fileStore := &fileModel.File{}
 	fileStore.Bucket = obj.Bucket
-	fileStore.Name = obj.Name
+	fileStore.Name = obj.StoredName
 	fileStore.OriginName = obj.OriginName
 	fileStore.Path = obj.Path
 	fileStore.Key = obj.Key
 	fileStore.Size = obj.Size
 	fileStore.Ext = obj.Ext
-	fileStore.Storage = obj.Storage
+	fileStore.Storage = obj.Driver
 	fileStore.ETag = obj.ETag
 	fileStore.ContentType = obj.ContentType
 	fileStore.LastModified = obj.LastModified
-	fileStore.Url = obj.URL
-	fileStore.UserId = 99
+	fileStore.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
 	fileStore.GroupId = cast.ToInt(c.DefaultPostForm("group_id", "99"))
 	fileStore.Type = cast.ToInt(c.DefaultPostForm("type", "1"))
 
 	// 组装url
-	fileStore.FullUrl = fileStore.GetFileFullUrl()
+	fileStore.FullUrl = obj.URL
 	return fileStore, nil
 }
 
