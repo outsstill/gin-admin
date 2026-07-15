@@ -11,6 +11,7 @@ import (
 	"github.com/outsstill/gin-admin/core"
 	middlewares "github.com/outsstill/gin-admin/middlerwares"
 	gokit "github.com/outsstill/go-kit"
+	"github.com/outsstill/go-kit/limiter"
 	"github.com/outsstill/go-kit/response"
 )
 
@@ -34,20 +35,20 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 		ic := controllers.NewAdminIndexController(base)
 		cc := controllers.NewAdminConfigController(base)
 		admin.GET("/index", ic.Index)
-		admin.GET("/limit-test", middlewares.LimitPerRoute(app, gokit.Config().Limit.TestRate), ic.LimitTest)
+		admin.GET("/limit-test", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.TestRate), ic.LimitTest)
 		admin.GET("/version", ic.Version)
 		admin.GET("/setting-all", cc.AllShow)
 
 		authGroup := admin.Group("/auth")
 		// 登录
 		lgc := controllers.NewAdminAuthController(base)
-		authGroup.POST("/login", middlewares.GuestJWT(), middlewares.LimitPerRoute(app, gokit.Config().Limit.LoginRate), lgc.Login)
+		authGroup.POST("/login", middlewares.GuestJWT(), limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.LoginRate), lgc.Login)
 		authGroup.POST("/refresh-token", lgc.RefreshToken)
 		authGroup.GET("/current", lgc.Current)
 		authGroup.POST("/profile", lgc.UpdateProfile)
 		authGroup.POST("/profile-pass", lgc.UpdatePassword)
 		authGroup.POST("/logout", lgc.Logout)
-		authGroup.GET("/captcha", middlewares.LimitPerRoute(app, gokit.Config().Limit.CaptchaRate), lgc.ShowCaptcha)
+		authGroup.GET("/captcha", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.CaptchaRate), lgc.ShowCaptcha)
 
 		auc := controllers.NewAdminUserController(base)
 		// 账号
@@ -87,12 +88,12 @@ func RegisterAdminRoutes(admin *gin.RouterGroup, app *core.App) {
 		admin.DELETE("/permission/:id", apc.Delete)
 
 		// 配置
-		admin.GET("/configs", middlewares.LimitPerRoute(app, gokit.Config().Limit.QueryRate), cc.Index)
-		admin.GET("/configs/all", middlewares.LimitPerRoute(app, gokit.Config().Limit.QueryRate), cc.All)
-		admin.GET("/config/:id", middlewares.LimitPerRoute(app, gokit.Config().Limit.QueryRate), cc.Get)
-		admin.POST("/config", middlewares.LimitPerRoute(app, gokit.Config().Limit.StoreRate), cc.Store)
-		admin.PUT("/config/:id", middlewares.LimitPerRoute(app, gokit.Config().Limit.UpdateRate), cc.Update)
-		admin.DELETE("/config/:id", middlewares.LimitPerRoute(app, gokit.Config().Limit.DeleteRate), cc.Delete)
+		admin.GET("/configs", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.QueryRate), cc.Index)
+		admin.GET("/configs/all", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.QueryRate), cc.All)
+		admin.GET("/config/:id", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.QueryRate), cc.Get)
+		admin.POST("/config", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.StoreRate), cc.Store)
+		admin.PUT("/config/:id", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.UpdateRate), cc.Update)
+		admin.DELETE("/config/:id", limiter.LimitPerRouteGin(gokit.Limiter(), gokit.Config().Limit.DeleteRate), cc.Delete)
 
 		fc := controllers.NewAdminFileController(base)
 		admin.POST("/upload", fc.Upload)

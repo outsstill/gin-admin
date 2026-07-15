@@ -59,7 +59,7 @@ func Register(r *gin.Engine, app *core.App, modules ...core.Module) {
 	// 作为参考 Github API 每小时最多 60 个请求（根据 IP）。
 	// 测试时，可以调高一点。
 	root.Use(middlewares.OperationLog(app))
-	root.Use(middlewares.LimitIP(app, gokit.Config().Limit.Rate))
+	//root.Use(limiter.LimitIPGin(gokit.Limiter(), gokit.Config().Limit.Rate))
 	root.Use(middlewares.AuthAdminJWT(app))
 
 	// 1️⃣ 内置模块
