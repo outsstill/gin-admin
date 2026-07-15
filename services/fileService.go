@@ -5,54 +5,36 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/model"
 	fileModel "github.com/outsstill/gin-admin/model/file"
 	"github.com/outsstill/gin-admin/pkg/auth"
-	"github.com/outsstill/gin-admin/pkg/file"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
 	gokit "github.com/outsstill/go-kit"
 	"github.com/outsstill/go-kit/storage"
-	"gorm.io/gorm"
-
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 )
 
 type FileService struct {
-	storage file.IStorage
-	DB      *gorm.DB
+	storage storage.IStorage
 }
 
 func NewFileService(drive ...string) *FileService {
+	storageConfig := gokit.Config().Storage.ToStorage()
 
-	fileDrive := gokit.Config().Storage.Driver
 	if len(drive) > 0 {
-		fileDrive = drive[0]
+		storageConfig.Driver = drive[0]
 	}
 
-	fileConfig := file.Config{
-		Driver: fileDrive,
-		LocalConfig: file.LocalConfig{
-			BasePath:      gokit.Config().Storage.Local.BasePath,
-			PublicBaseURL: gokit.Config().Storage.Local.BaseURL,
-		},
-		OssConfig: file.OssConfig{
-			Region:     gokit.Config().Storage.Oss.Region,
-			BucketName: gokit.Config().Storage.Oss.Bucket,
-			Key:        gokit.Config().Storage.Oss.Key,
-			Secret:     gokit.Config().Storage.Oss.Secret,
-		},
-	}
-	fileStorage := file.NewStorage(fileConfig)
+	storageDriver, _ := storage.New(storageConfig)
+
 	return &FileService{
-		storage: fileStorage,
+		storage: storageDriver.Driver(),
 	}
 }
 
 func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) {
-
-	uploadStorage := c.PostForm("uploadStorage")
 
 	// 从 form-data 获取文件
 	fileObj, header, err := c.Request.FormFile("file")
@@ -72,15 +54,6 @@ func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) 
 		return nil, errors.New("文件格式不允许 只允许[ " + strings.Join(extLimit, " ") + " ]")
 	}
 
-	storageConfig := gokit.Config().Storage.ToStorage()
-	storageConfig.Driver = uploadStorage
-
-	storageDriver, err := storage.New(storageConfig)
-
-	if err != nil {
-		return nil, err
-	}
-
 	input := &storage.UploadRequest{
 		Filename:    header.Filename,
 		Path:        header.Filename,
@@ -90,7 +63,7 @@ func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) 
 		Meta:        map[string]string{},
 	}
 
-	obj, err := storageDriver.Driver().Put(c, input)
+	obj, err := service.storage.Put(c, input)
 
 	if err != nil {
 		return nil, err
