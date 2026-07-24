@@ -163,6 +163,8 @@ github.com/outsstill/go-kit v1.2.22 h1:DmSgOrm6qqH3nbDsWB69uG0V9HsTX+gqPsZqptSHU
 github.com/outsstill/go-kit v1.2.22/go.mod h1:NZTsSwmNKZjjGvKfiNMPbG+Wjgwzw3kXvqmsVUFcVrk=
 github.com/outsstill/go-kit v1.2.23 h1:aVFNsazXgqr0n1viLkppLfO624+7V/7qVYNnAFfNhRA=
 github.com/outsstill/go-kit v1.2.23/go.mod h1:NZTsSwmNKZjjGvKfiNMPbG+Wjgwzw3kXvqmsVUFcVrk=
+github.com/outsstill/go-kit v1.2.26 h1:qm6whtrPs+ihiEiYbeJlcfiAkmahzD5RQ09Sf8D9td4=
+github.com/outsstill/go-kit v1.2.26/go.mod h1:NZTsSwmNKZjjGvKfiNMPbG+Wjgwzw3kXvqmsVUFcVrk=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
 github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

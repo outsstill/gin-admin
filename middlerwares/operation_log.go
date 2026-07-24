@@ -4,6 +4,7 @@ package middlewares
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/gin-gonic/gin"
@@ -43,6 +44,12 @@ func OperationLog(app *core.App) gin.HandlerFunc {
 
 			fullUrl := c.Request.URL.Path
 			query := c.Request.URL.RawQuery
+
+			// 上传文件不记录
+			uPath := fmt.Sprintf("%s%s", app.Prefix, "/upload")
+			if uPath == fullUrl && c.Request.Method == "POST" {
+				return
+			}
 
 			if query != "" {
 				fullUrl += "?" + query
