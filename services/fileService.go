@@ -103,12 +103,12 @@ func (service *FileService) Delete(model *fileModel.File) (rowsAffected int64) {
 }
 
 func (service *FileService) Get(idstr string) (model *fileModel.File) {
-	gokit.DB().Where("id", idstr).First(&model)
+	gokit.DB().Where("`id` = ?", idstr).First(&model)
 	return
 }
 
 func (service *FileService) GetByKey(key string) (model *fileModel.File) {
-	gokit.DB().Where("key = ?", key).First(&model)
+	gokit.DB().Where("`key` = ?", key).First(&model)
 	return
 }
 
