@@ -12,6 +12,7 @@ import (
 	"github.com/outsstill/gin-admin/requests"
 	"github.com/outsstill/gin-admin/services"
 	"github.com/outsstill/go-kit/response"
+	"github.com/outsstill/go-kit/storage"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -125,11 +126,31 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 		return
 	}
 
+	fileStore := &fileModel.File{}
 	if obj != nil {
-		uc.App.GetFileService().Create(obj)
+		// 存入数据库
+		fileStore.Bucket = obj.Bucket
+		fileStore.Name = obj.StoredName
+		fileStore.OriginName = obj.OriginName
+		fileStore.Path = obj.Path
+		fileStore.Key = obj.Key
+		fileStore.Size = obj.Size
+		fileStore.Ext = obj.Ext
+		fileStore.Storage = obj.Driver
+		fileStore.ETag = obj.ETag
+		fileStore.ContentType = obj.ContentType
+		fileStore.LastModified = obj.LastModified
+		fileStore.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
+		fileStore.GroupId = cast.ToInt(c.DefaultPostForm("group_id", "99"))
+		fileStore.Type = cast.ToInt(c.DefaultPostForm("type", "1"))
+
+		// 组装url
+		fileStore.FullUrl = obj.URL
+		fileStore.UploadType = cast.ToInt(storage.UPLOAD_TYPE_CROSS_SERVER)
+		uc.App.GetFileService().Create(fileStore)
 	}
 
-	response.Data(c, obj)
+	response.Data(c, fileStore)
 }
 
 func (uc *AdminFileController) Update(c *gin.Context) {

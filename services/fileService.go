@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/outsstill/gin-admin/model"
 	fileModel "github.com/outsstill/gin-admin/model/file"
-	"github.com/outsstill/gin-admin/pkg/auth"
 	"github.com/outsstill/gin-admin/pkg/helpers"
 	"github.com/outsstill/gin-admin/pkg/paginator"
 	gokit "github.com/outsstill/go-kit"
@@ -34,7 +33,7 @@ func NewFileService(drive ...string) *FileService {
 	}
 }
 
-func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) {
+func (service *FileService) UploadFile(c *gin.Context) (*storage.FileObj, error) {
 
 	// 从 form-data 获取文件
 	fileObj, header, err := c.Request.FormFile("file")
@@ -69,26 +68,7 @@ func (service *FileService) UploadFile(c *gin.Context) (*fileModel.File, error) 
 		return nil, err
 	}
 
-	// 存入数据库
-	fileStore := &fileModel.File{}
-	fileStore.Bucket = obj.Bucket
-	fileStore.Name = obj.StoredName
-	fileStore.OriginName = obj.OriginName
-	fileStore.Path = obj.Path
-	fileStore.Key = obj.Key
-	fileStore.Size = obj.Size
-	fileStore.Ext = obj.Ext
-	fileStore.Storage = obj.Driver
-	fileStore.ETag = obj.ETag
-	fileStore.ContentType = obj.ContentType
-	fileStore.LastModified = obj.LastModified
-	fileStore.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
-	fileStore.GroupId = cast.ToInt(c.DefaultPostForm("group_id", "99"))
-	fileStore.Type = cast.ToInt(c.DefaultPostForm("type", "1"))
-
-	// 组装url
-	fileStore.FullUrl = obj.URL
-	return fileStore, nil
+	return obj, nil
 }
 
 func (service *FileService) DeleteFile(id string) error {

@@ -55,7 +55,7 @@ func (model *File) GetFileFullUrl() string {
 			url = url + "/" + path
 		} else if storageDrive == "oss" {
 			url = gokit.Config().Storage.Oss.Domain
-			url = url + "/" + model.Path
+			url = url + "/" + model.Key
 		}
 	}
 	return url
