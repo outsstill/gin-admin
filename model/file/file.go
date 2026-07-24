@@ -12,23 +12,24 @@ import (
 
 type File struct {
 	model.BaseModel
-	OriginName   string     `gorm:"column:origin_name;type:varchar(255);index" json:"origin_name"`
-	Name         string     `gorm:"column:name;type:varchar(255)" json:"name"`
-	Key          string     `gorm:"column:key;type:varchar(255)" json:"key"`
-	GroupId      int        `gorm:"column:group_id;index" json:"group_id"`
-	Size         int64      `gorm:"column:size" json:"size"`
-	Storage      string     `gorm:"column:storage;type:varchar(255);index" json:"storage"`
-	Path         string     `gorm:"column:path;type:text" json:"path"`
-	Type         int        `gorm:"column:type;type:tinyint" json:"type"`
-	Ext          string     `gorm:"column:ext;type:varchar(255)" json:"ext"`
-	UserId       uint64     `gorm:"column:user_id" json:"user_id"`
-	Url          string     `gorm:"column:url;type:text" json:"url"`
-	ContentType  string     `gorm:"column:content_type;type:varchar(255)" json:"content_type"`
-	ETag         string     `gorm:"column:e_tag;type:varchar(255)" json:"e_tag"`
-	Bucket       string     `gorm:"column:bucket;type:varchar(255)" json:"bucket"`
-	LastModified time.Time  `gorm:"column:last_modified" json:"last_modified"`
-	FullUrl      string     `gorm:"-" json:"full_url"`
-	DeletedAt    *time.Time `gorm:"column:deleted_at" json:"deleted_at"`
+	OriginName   string    `gorm:"column:origin_name" json:"origin_name"`
+	Name         string    `gorm:"column:name" json:"name"`
+	Key          string    `gorm:"column:key" json:"key"`
+	GroupId      int       `gorm:"column:group_id;index" json:"group_id"`
+	Size         int64     `gorm:"column:size" json:"size"`
+	Storage      string    `gorm:"column:storage" json:"storage"`
+	UploadType   int       `gorm:"column:upload_type" json:"upload_type"`
+	Path         string    `gorm:"column:path" json:"-"`
+	Type         int       `gorm:"column:type;default:1" json:"type"`
+	Ext          string    `gorm:"column:ext" json:"ext"`
+	UserId       uint64    `gorm:"column:user_id" json:"-"`
+	Url          string    `gorm:"column:url" json:"url"`
+	MimeType     string    `gorm:"column:mime_type" json:"mime_type"`
+	ContentType  string    `gorm:"column:content_type" json:"content_type"`
+	ETag         string    `gorm:"column:e_tag" json:"e_tag"`
+	Bucket       string    `gorm:"column:bucket" json:"bucket"`
+	LastModified time.Time `gorm:"column:last_modified" json:"last_modified"`
+	FullUrl      string    `gorm:"-" json:"full_url"`
 	model.CommonTimestampsField
 }
 
