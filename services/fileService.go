@@ -97,7 +97,7 @@ func (service *FileService) DeleteFile(id string) error {
 		return errors.New("没有找到该条记录")
 	}
 	// 上传
-	err := service.storage.Delete(context.Background(), fileObj.Path)
+	err := service.storage.Delete(context.Background(), fileObj.Key)
 	if err != nil {
 		return err
 	}

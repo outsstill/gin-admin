@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/spf13/cast"
+	"gorm.io/gorm"
 )
 
 type DbModel interface {
@@ -18,8 +19,9 @@ type BaseModel struct {
 
 // CommonTimestampsField 时间戳
 type CommonTimestampsField struct {
-	CreatedAt time.Time `gorm:"column:created_at;index;" json:"created_at,omitempty"`
-	UpdatedAt time.Time `gorm:"column:updated_at;index;" json:"updated_at,omitempty"`
+	CreatedAt time.Time      `gorm:"column:created_at;index;" json:"created_at,omitempty"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;index;" json:"updated_at,omitempty"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:datetime(3)" json:"deleted_at"`
 }
 
 // GetStringID 获取 ID 的字符串格式
