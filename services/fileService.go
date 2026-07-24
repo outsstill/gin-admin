@@ -126,6 +126,11 @@ func (service *FileService) Get(idstr string) (model *fileModel.File) {
 	return
 }
 
+func (service *FileService) GetByKey(key string) (model *fileModel.File) {
+	gokit.DB().Where("key = ?", key).First(&model)
+	return
+}
+
 func (service *FileService) All() (models []fileModel.File) {
 	gokit.DB().Find(&models)
 	return
