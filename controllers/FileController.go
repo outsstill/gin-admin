@@ -95,6 +95,7 @@ func (uc *AdminFileController) Store(c *gin.Context) {
 	u := &fileModel.File{
 		Name:         request.Name,
 		OriginName:   request.OriginName,
+		UploadType:   request.UploadType,
 		GroupId:      request.GroupId,
 		Size:         request.Size,
 		Ext:          request.Ext,

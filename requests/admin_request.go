@@ -320,6 +320,7 @@ type AdminFileStoreRequest struct {
 	Name         string     `json:"name"`
 	Key          string     `json:"key"`
 	GroupId      int        `json:"group_id" validate:"required"`
+	UploadType   int        `json:"upload_type"`
 	Size         int64      `json:"size"`
 	Storage      string     `json:"storage"`
 	Path         string     `json:"path"`
