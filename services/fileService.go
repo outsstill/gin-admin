@@ -58,6 +58,7 @@ func (service *FileService) UploadFile(c *gin.Context) (*storage.FileObj, error)
 		Path:        header.Filename,
 		Size:        header.Size,
 		ContentType: header.Header.Get("Content-Type"),
+		MimeType:    header.Header.Get("Content-Type"),
 		Reader:      fileObj,
 		Meta:        map[string]string{},
 	}

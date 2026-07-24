@@ -138,6 +138,7 @@ func (uc *AdminFileController) Upload(c *gin.Context) {
 		fileStore.Ext = obj.Ext
 		fileStore.Storage = obj.Driver
 		fileStore.ETag = obj.ETag
+		fileStore.MimeType = obj.MimeType
 		fileStore.ContentType = obj.ContentType
 		fileStore.LastModified = obj.LastModified
 		fileStore.UserId = cast.ToUint64(auth.CurrentAdminUID(c))
